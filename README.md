@@ -4,7 +4,7 @@
 [![WPF](https://img.shields.io/badge/WPF-MVVM-blue)](#-arkitektur)
 [![xUnit](https://img.shields.io/badge/Tests-xUnit-5A2A83)](#-testning)
 
-Ett avancerat C#-projekt byggt som ett komplett **Hänga Gubbe**-spel, med stöd för både **konsol** och ett grafiskt **WPF (MVVM)**-gränssnitt.  
+Ett C#-projekt byggt som ett komplett **Hänga Gubbe**-spel, med stöd för både **konsol** och ett grafiskt **WPF (MVVM)**-gränssnitt.  
 Fokus: **Clean Architecture (Separation of Concerns)**, **MVVM**, **TDD**, **i18n**.
 
 ---
