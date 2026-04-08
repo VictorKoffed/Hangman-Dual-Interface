@@ -1,0 +1,47 @@
+﻿/*
+ * FILKOMMENTAR: Denna klass tillhandahåller standardimplementeringen av
+ * ICommand-gränssnittet (RelayCommand/DelegateCommand) för att binda UI-händelser
+ * till ViewModels. Denna MVVM-boilerpate har utvecklats med assistans från
+ * en stor språkmodell (AI).
+ */
+
+using System;
+using System.Windows.Input;
+
+namespace Hangman.WPF.ViewModels
+{
+    /// <summary>
+    /// En standardimplementation av ICommand för MVVM.
+    /// </summary>
+    public class RelayCommand : ICommand
+    {
+        private readonly Action<object?> _execute;
+        private readonly Predicate<object?>? _canExecute;
+
+        public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public bool CanExecute(object? parameter) =>
+            _canExecute == null || _canExecute(parameter);
+
+        public void Execute(object? parameter) =>
+            _execute(parameter);
+
+        /// <summary>
+        /// Anropa när förutsättningarna för CanExecute kan ha ändrats.
+        /// </summary>
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+    }
+}
