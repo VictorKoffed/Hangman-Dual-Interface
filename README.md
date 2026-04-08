@@ -216,6 +216,35 @@ dotnet test
 - `ConsoleInput.cs` / `ConsoleRenderer.cs` – SoC för IO
 </details>
 
+## 👥 Projekt & Kurskontext
+
+Detta projekt utvecklades i samarbete med en annan student som en del av kursen:
+
+**Avancerad programmering med C# (7,5 hp)**  
+(*Advanced C# Programming, 7.5 credits*)
+
+Projektet genomfördes som ett pararbete med fokus på att tillämpa avancerade C#-koncept i ett större systemutvecklingsprojekt.
+
+### 🎯 Fokus i projektet
+
+Arbetet omfattade:
+
+- Implementering av avancerade C#-funktioner såsom asynkron programmering och events  
+- Tillämpning av designmönster (bl.a. Strategy Pattern och MVVM)  
+- Testdriven utveckling (TDD) med xUnit  
+- Hantering av databaser och persistens med EF Core och SQLite  
+- Utveckling av både konsolapplikation och grafiskt WPF-gränssnitt  
+- Strukturering av kod enligt Clean Architecture och Separation of Concerns  
+
+### 🧠 Lärandeperspektiv
+
+Projektet gav praktisk erfarenhet inom:
+
+- Objektorienterad och avancerad C#-utveckling  
+- Testbar och skalbar mjukvaruarkitektur  
+- Asynkron programmering och responsiva applikationer  
+- Systemdesign i större kodbaser  
+
 ---
 
 AI-ASSISTANS OCH KODGENERERING
