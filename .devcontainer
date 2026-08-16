@@ -1,0 +1,10 @@
+{
+  "name": "Hangman .NET Development",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "customizations": {
+    "jetbrains": {
+      "backend": "Rider"
+    }
+  },
+  "postCreateCommand": "dotnet restore"
+}
