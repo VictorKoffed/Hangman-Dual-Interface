@@ -247,17 +247,21 @@ Projektet gav praktisk erfarenhet inom:
 
 ---
 
-AI-ASSISTANS OCH KODGENERERING
+---
+
+## 🤖 AI-assistans och kodgenerering
+
 Delar av denna kodbas har skapats, refaktorerats eller assisterats med hjälp av stora språkmodeller (LLM) och AI-verktyg för att effektivisera utvecklingsprocessen och förbättra kodkvaliteten.
 
-Verktyg som använts
-ChatGPT (för utformning av komplexa algoritmer och dokumentation).
-Copilot (för autokomplettering, boilerplate och tester).
-Omfattning av AI-assistans
-AI har huvudsakligen använts för:
+### 🛠️ Verktyg som använts
+* **ChatGPT:** För utformning av komplexa algoritmer och dokumentation.
+* **Copilot:** För autokomplettering, boilerplate och tester.
 
-Boilerplate-kod: Generering av standardstruktur och klassdefinitioner.
-Algoritmiska lösningar: Förslag på effektiva implementeringar för standardproblem (t.ex. sortering, databasinteraktioner).
-Dokumentation: Förbättring och generering av kommentarer och docstrings.
-Mänsklig granskning
+### 🎯 Omfattning av AI-assistans
+AI har huvudsakligen använts för:
+* **Boilerplate-kod:** Generering av standardstruktur och klassdefinitioner.
+* **Algoritmiska lösningar:** Förslag på effektiva implementeringar för standardproblem (t.ex. sortering, databasinteraktioner).
+* **Dokumentation:** Förbättring och generering av kommentarer och docstrings.
+
+### 👁️ Mänsklig granskning
 All AI-genererad kod har granskats, testats och validerats manuellt av en mänsklig utvecklare.
