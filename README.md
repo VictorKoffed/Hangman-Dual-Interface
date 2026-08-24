@@ -183,8 +183,24 @@ dotnet test
 - **Hangman.WPF – GameViewWPF**  
   ![WPF GameView](Hangman.WPF/Images/WPFScreenShow.png)
 
+---
+
+### 🎬 Demo
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/b7c3f18a-ba00-4da4-97ac-13a98c06783e)" autoplay loop muted playsinline width="250"></video>
+</div>
+
+---
+
 - **Hangman.Console – ConsoleMenu**  
   ![Console Round](Hangman.WPF/Images/ConsoleScreenShot.png)
+
+---
+
+### 🎬 Demo
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/976fce42-e14e-4362-ba39-a99f11b3ee19" autoplay loop muted playsinline width="250"></video>
+</div>
 
 ---
 
