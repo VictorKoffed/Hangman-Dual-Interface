@@ -187,7 +187,7 @@ dotnet test
 
 ### 🎬 Demo
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/b7c3f18a-ba00-4da4-97ac-13a98c06783e)" autoplay loop muted playsinline width="250"></video>
+  <video src="https://github.com/user-attachments/assets/b7c3f18a-ba00-4da4-97ac-13a98c06783e" autoplay loop muted playsinline width="250"></video>
 </div>
 
 ---
