@@ -4,7 +4,7 @@
 [![WPF](https://img.shields.io/badge/WPF-MVVM-blue)](#-arkitektur)
 [![xUnit](https://img.shields.io/badge/Tests-xUnit-5A2A83)](#-testning)
 
-Ett C#-projekt för **Hänga Gubbe** med stöd för både konsol och ett grafiskt **WPF-gränssnitt** byggt med **MVVM**. Projektet använder bland annat Clean Architecture, TDD och stöd för svenska och engelska.
+Ett C#-projekt för **Hänga Gubbe** med stöd för både konsol och ett grafiskt **WPF-gränssnitt** byggt med **MVVM**. Projektet använder bland annat Clean Architecture-inspirerad struktur, TDD och stöd för svenska och engelska.
 
 ---
 
@@ -140,7 +140,7 @@ Databasen används bland annat för:
 - **Egna ordlistor** – användaren kan lägga till egna ord på svenska eller engelska.
 - **Turneringsläge** – två spelare med tre liv var.
 - **Speltimer** – 60 sekunder per runda i både singleplayer och tournament.
-- **Asynkron ordhantering** – ord kan hämtas från API, databas eller lokal källa.
+- **Flexibel ordhantering** – ord kan hämtas asynkront från API, databas eller lokala ordkällor.
 - **API-integration** – engelska ord kan hämtas från ett externt API.
 - **Separering av konsollogik** – `ConsoleInput` och `ConsoleRenderer` håller inmatning och rendering separerade från spellogiken.
 
