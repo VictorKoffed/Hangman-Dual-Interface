@@ -1,11 +1,12 @@
-﻿using Hangman.Core.Localizations;
+using Hangman.Core.Localizations;
 using Hangman.Core.Models;
 
 namespace Hangman.WPF.ViewModels
 {
     /// <summary>
-    /// Implementation av Strategy Pattern (Context) för lokalisering.
-    /// Arver från BaseViewModel för att stödja uppdatering av UI vid språkbyte.
+    /// Provides the active UI localization strategy to the WPF layer.
+    /// Inherits from BaseViewModel so that changing the language can notify the
+    /// entire UI to refresh its bound localized values.
     /// </summary>
     public class LocalizationProvider : BaseViewModel, IUiStrings
     {
@@ -17,19 +18,21 @@ namespace Hangman.WPF.ViewModels
         }
 
         /// <summary>
-        /// Byter den aktiva språkstrategin och meddelar hela UI:t
-        /// att alla text-bindningar måste uppdateras.
+        /// Replaces the active localization strategy and notifies the entire UI
+        /// that all localized bindings must be evaluated again.
         /// </summary>
         public void SetStrategy(IUiStrings newStrategy)
         {
             _currentStrategy = newStrategy;
 
-            // Anropar OnPropertyChanged(null) för att tvinga hela UI:t att ladda om alla strängar.
+            // Passing null to OnPropertyChanged forces the UI to refresh all
+            // localized bindings because the active strategy has changed.
             OnPropertyChanged(null);
         }
 
-        // --- IMPLEMENTATION AV IUiStrings ---
-        // Alla egenskaper och metoder delegerar anropet till den _currentStrategy som är aktiv för tillfället.
+        // --- IUiStrings IMPLEMENTATION ---
+        // All properties and methods delegate to the strategy currently selected.
+        // This keeps localization decisions outside the individual ViewModels.
 
         #region Välkomstskärm
         public string WelcomeTitleArt => _currentStrategy.WelcomeTitleArt;
