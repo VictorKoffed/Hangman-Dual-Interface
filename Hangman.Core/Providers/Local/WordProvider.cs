@@ -1,4 +1,4 @@
-﻿using Hangman.Core.Providers.Interface;
+using Hangman.Core.Providers.Interface;
 using Hangman.Core.Models;
 using System;
 using System.Linq;
@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace Hangman.Core
 {
     /// <summary>
-    /// Hämtar slumpmässiga svenska ord från en intern, lokal array.
-    /// Ordlistan filtreras baserat på den valda <see cref="WordDifficulty"/>.
+    /// Provides random Swedish words from an internal local collection.
+    /// The word list is filtered according to the selected <see cref="WordDifficulty"/>.
     /// </summary>
     public sealed class WordProvider : IAsyncWordProvider
     {
@@ -32,11 +32,17 @@ namespace Hangman.Core
 
         public string DifficultyName => $"Svensk Lokal ({_difficulty})";
 
-        // IMPLEMENTATION: Nu publik och läsbar via interfacet
+        /// <summary>
+        /// Gets the configured difficulty so the provider can be consumed
+        /// through the common word-provider abstraction without relying on reflection.
+        /// </summary>
+        // IMPLEMENTATION: Now public and exposed through the interface
         public WordDifficulty Difficulty => _difficulty;
 
         /// <summary>
-        /// Returnerar ett slumpmässigt ord från listan, filtrerat efter svårighetsgrad.
+        /// Returns a random word from the local collection that matches the configured difficulty.
+        /// The selection is restricted to the appropriate length range so that locally provided
+        /// words follow the same difficulty rules as words from other provider implementations.
         /// </summary>
         public Task<string> GetWordAsync(CancellationToken ct = default)
         {
