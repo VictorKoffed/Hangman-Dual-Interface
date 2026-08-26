@@ -1,8 +1,8 @@
-﻿/*
- * FILKOMMENTAR: Denna fil hanterar asynkron nätverkskommunikation (HTTP-anrop) och parsning
- * av data från ett externt API. Implementeringen av I/O-operationer och felhantering
- * har utvecklats med assistans från en stor språkmodell (AI) för att säkerställa effektiv
- * asynkron exekvering.
+/*
+ * FILE COMMENT: This file handles asynchronous network communication (HTTP requests) and parsing
+ * of data from an external API. The implementation of I/O operations and error handling
+ * was developed with assistance from a large language model (AI) to support efficient
+ * asynchronous execution.
  */
 
 using System;
@@ -18,6 +18,9 @@ using Hangman.Core.Models;
 
 namespace Hangman.Core.Providers.Api
 {
+    /// <summary>
+    /// Provides Hangman words by retrieving them asynchronously from an external API.
+    /// </summary>
     public sealed class ApiWordProvider : IAsyncWordProvider
     {
         private static readonly HttpClient _httpClient = new();
@@ -33,9 +36,18 @@ namespace Hangman.Core.Providers.Api
 
         public string DifficultyName => $"API ({_difficulty})";
 
-        // IMPLEMENTATION: Nu publik och läsbar via interfacet
+        /// <summary>
+        /// Gets the difficulty configured for this provider so consumers can treat
+        /// API-provided words consistently with words from other provider strategies.
+        /// </summary>
+        // IMPLEMENTATION: Now public and exposed through the interface
         public WordDifficulty Difficulty => _difficulty;
 
+        /// <summary>
+        /// Retrieves a word whose length matches the configured difficulty.
+        /// The length is randomized within the difficulty range so that repeated
+        /// rounds do not always produce words of the same size.
+        /// </summary>
         public async Task<string> GetWordAsync(CancellationToken ct = default)
         {
             int minLength, maxLength;
