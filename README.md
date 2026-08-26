@@ -1,8 +1,8 @@
 # 🎮 Hangman
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
-[![WPF](https://img.shields.io/badge/WPF-MVVM-blue)](#-arkitektur)
-[![xUnit](https://img.shields.io/badge/Tests-xUnit-5A2A83)](#-testning)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![WPF](https://img.shields.io/badge/WPF-MVVM-blue?style=flat&logo=windows&logoColor=white)](#-arkitektur)
+[![xUnit](https://img.shields.io/badge/Tests-xUnit-5A2A83?style=flat)](#-testning)
 
 Ett C#-projekt för **Hänga Gubbe** med stöd för både konsol och ett grafiskt **WPF-gränssnitt** byggt med **MVVM**. Projektet använder bland annat Clean Architecture-inspirerad struktur, TDD och stöd för svenska och engelska.
 
