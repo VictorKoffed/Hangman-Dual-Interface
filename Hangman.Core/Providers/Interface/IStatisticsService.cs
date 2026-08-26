@@ -8,28 +8,31 @@ using Hangman.Core.Models;
 namespace Hangman.Core.Providers.Interface
 {
     /// <summary>
-    /// Definierar kontraktet för hantering av highscores (sparar, hämtar).
+    /// Defines the contract for managing high scores, including persistence and retrieval.
     /// </summary>
     public interface IStatisticsService
     {
         /// <summary>
-        /// Sparar ett highscore. Implementationen ska avgöra om den nya posten är bättre än den gamla.
+        /// Saves a high score. The implementation determines whether the new result
+        /// is better than an existing record and therefore worth persisting.
         /// </summary>
-        /// <param name="newScore">Den nya highscore-posten att utvärdera och spara.</param>
+        /// <param name="newScore">The new high-score entry to evaluate and save.</param>
         Task SaveHighscoreAsync(HighscoreEntry newScore);
 
         /// <summary>
-        /// Hämtar de bästa highscoresen för en specifik svårighetsgrad, sorterade efter vinster i fallande ordning.
+        /// Retrieves the best high scores for a specific difficulty,
+        /// ordered by consecutive wins in descending order.
         /// </summary>
-        /// <param name="difficulty">Svårighetsgraden att filtrera på.</param>
-        /// <returns>En lista med HighscoreEntry.</returns>
+        /// <param name="difficulty">The difficulty level to filter by.</param>
+        /// <returns>A list of <see cref="HighscoreEntry"/> records.</returns>
         Task<List<HighscoreEntry>> GetHighscoresAsync(WordDifficulty difficulty);
 
         /// <summary>
-        /// Hämtar de N bästa resultaten för alla svårighetsgrader.
+        /// Retrieves the top N results across all difficulty levels,
+        /// allowing the application to present a combined global ranking.
         /// </summary>
-        /// <param name="topN">Antal poster att returnera per svårighetsgrad.</param>
-        /// <returns>En platt lista med toppresultat.</returns>
+        /// <param name="topN">The number of entries to return per difficulty level.</param>
+        /// <returns>A flattened list containing the top results.</returns>
         Task<List<HighscoreEntry>> GetGlobalTopScoresAsync(int topN = 5);
     }
 }
