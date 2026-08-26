@@ -1,29 +1,63 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<!-- 
+    Project Configuration: Hangman.WPF
+    This file defines the build instructions and dependencies for the presentation layer (WPF).
+    It acts as the Composition Root of the application, bringing together the UI, 
+    concrete infrastructure providers (like SQLite), and the core domain logic.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<UseWPF>true</UseWPF>
-	</PropertyGroup>
+    <PropertyGroup>
+        <!-- 
+            Using WinExe ensures that the application launches strictly as a GUI process 
+            without opening a redundant console window in the background.
+        -->
+        <OutputType>WinExe</OutputType>
+        <!-- 
+            Targeting net8.0-windows is mandatory here because WPF relies on Windows-specific 
+            OS APIs that are not part of the cross-platform standard .NET.
+        -->
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <!-- 
+            Enabling strict nullability checks at the project level forces the compiler to flag 
+            potential NullReferenceExceptions during development, drastically improving runtime stability.
+        -->
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Hangman.Core\Hangman.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            Clean Architecture enforcement: 
+            The WPF project (Presentation Layer) depends on Hangman.Core (Domain & Application Logic), 
+            but Hangman.Core remains completely ignorant of WPF or any UI framework.
+        -->
+        <ProjectReference Include="..\Hangman.Core\Hangman.Core.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            Even though database operations are defined in Core, this package must be referenced here 
+            because WPF acts as the Composition Root (in App.xaml.cs). It requires the concrete SQLite 
+            provider implementation to instantiate and inject it into the core interfaces on startup.
+        -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Resource Include="Images\stage_0.png" />
-		<Resource Include="Images\stage_1.png" />
-		<Resource Include="Images\stage_2.png" />
-		<Resource Include="Images\stage_3.png" />
-		<Resource Include="Images\stage_4.png" />
-		<Resource Include="Images\stage_5.png" />
-		<Resource Include="Images\stage_6.png" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            These images are intentionally marked as 'Resource' rather than 'Content' or 'None'. 
+            This architectural choice instructs the compiler to embed the raw image files directly into the compiled assembly.
+            This guarantees the assets cannot be accidentally deleted by the end-user and allows reliable, 
+            path-independent resolution using absolute WPF Pack URIs (pack://application:,,,/...).
+        -->
+        <Resource Include="Images\stage_0.png" />
+        <Resource Include="Images\stage_1.png" />
+        <Resource Include="Images\stage_2.png" />
+        <Resource Include="Images\stage_3.png" />
+        <Resource Include="Images\stage_4.png" />
+        <Resource Include="Images\stage_5.png" />
+        <Resource Include="Images\stage_6.png" />
+    </ItemGroup>
 
 </Project>
