@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Hangman.Core.Models
 {
+    /// <summary>
+    /// Represents a custom word together with the difficulty and language
+    /// required to determine when it is eligible for a game round.
+    /// </summary>
     public class CustomWordEntry
     {
         public int Id { get; set; }
@@ -22,6 +26,8 @@ namespace Hangman.Core.Models
         [SetsRequiredMembers]
         public CustomWordEntry()
         {
+            // The parameterless constructor provides safe defaults for persistence
+            // and object materialization scenarios where values are populated later.
             Word = string.Empty;
             Difficulty = default;
             Language = default;
@@ -29,6 +35,8 @@ namespace Hangman.Core.Models
 
         public CustomWordEntry(string word, WordDifficulty difficulty, WordLanguage language)
         {
+            // Normalizing the word at the model boundary keeps comparisons and
+            // gameplay consistent regardless of how the word was originally entered.
             Word = word.ToUpperInvariant();
             Difficulty = difficulty;
             Language = language;
