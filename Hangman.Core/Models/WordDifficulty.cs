@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace Hangman.Core.Models
 {
-    /// Definierar de standardiserade svårighetsgraderna för ordhämtning.
-    /// Används av alla WordProviders (API och Lokal) för enhetlighet.
+    /// <summary>
+    /// Defines the standardized difficulty levels used when selecting words.
+    /// Shared by all WordProviders to ensure consistent difficulty handling
+    /// regardless of the underlying word source.
+    /// </summary>
     public enum WordDifficulty
     {
         Easy,
