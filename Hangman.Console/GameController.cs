@@ -1,4 +1,4 @@
-﻿using Hangman.Core.Localizations;
+using Hangman.Core.Localizations;
 using Hangman.Core;
 using Hangman.Core.Exceptions;
 using Hangman.Core.Models;
@@ -10,8 +10,8 @@ using System.Threading;
 namespace Hangman.Console
 {
     /// <summary>
-    /// Hjärnan i applikationen. Hanterar applikationsflödet,
-    /// spellogik och koordinerar mellan Input och Renderer.
+    /// Coordinates the application's console flow, game logic,
+    /// and communication between input handling and rendering.
     /// </summary>
     public class GameController
     {
@@ -29,7 +29,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Startar applikationen, visar välkomstskärm och huvudmenyloop.
+        /// Starts the application and keeps the main menu active until the user chooses to exit.
         /// </summary>
         public async Task RunAsync()
         {
@@ -66,7 +66,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hanterar flödet för enspelarläget.
+        /// Coordinates the single-player flow, including consecutive-win tracking
+        /// and persistence of the final high score.
         /// </summary>
         private async Task PlaySinglePlayerAsync()
         {
@@ -125,7 +126,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hanterar flödet för tvåspelarläget.
+        /// Coordinates the two-player tournament flow, including round progression,
+        /// life management, cancellation, and final tournament results.
         /// </summary>
         private async Task PlayTournamentAsync()
         {
@@ -158,7 +160,8 @@ namespace Hangman.Console
                 string? secret;
                 try
                 {
-                    // ÄNDRING 1/2: Anropar den uppdaterade metoden som returnerar string?
+                    // StartNewRoundAsync now communicates a normal end-of-tournament state through
+                    // its return value instead of using an exception as part of normal control flow.
                     secret = await tournament.StartNewRoundAsync();
                 }
                 catch (NoCustomWordsFoundException ex)
@@ -167,7 +170,8 @@ namespace Hangman.Console
                     _renderer.WaitForKey(_strings.CommonPressAnyKeyToContinue);
                     return;
                 }
-                // ÄNDRING 2/2: Tar bort catch för InvalidOperationException som användes för flödeskontroll
+                // Unexpected provider failures still need to be translated into user-facing feedback
+                // so infrastructure details do not leak into the normal tournament flow.
                 catch (Exception ex)
                 {
                     _renderer.ShowError(_strings.ErrorCouldNotFetchTournamentWord(ex.Message));
@@ -175,7 +179,9 @@ namespace Hangman.Console
                     return;
                 }
 
-                if (secret == null) // NY KONTROLL: Turneringen är avslutad (GameStatus har redan uppdaterats i TwoPlayerGame)
+                // A null word indicates that the tournament has already reached a terminal state.
+                // The game object is responsible for updating that state before returning control here.
+                if (secret == null)
                 {
                     break;
                 }
@@ -183,7 +189,8 @@ namespace Hangman.Console
                 var (roundResult, feedback) = await PlayRoundWithFeedbackAsync(currentGuesser.Name, secret, currentGuesser.Lives);
                 roundFeedback = feedback;
 
-                // Hantera avbruten runda
+                // A cancelled round is treated as a loss so that tournament state remains consistent
+                // with the outcome of the round rather than leaving the current player unresolved.
                 if (roundResult == GameStatus.Lost && roundFeedback == _strings.RoundFeedbackCancelled)
                 {
                     tournament.HandleRoundEnd(GameStatus.Lost);
@@ -213,8 +220,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Spelar en enskild runda av Hänga Gubbe (med timer/animation).
-        /// Returnerar status och feedback-meddelande som en Tuple.
+        /// Plays one Hangman round with the shared timer and animation.
+        /// Returns both the final game status and the feedback associated with the round outcome.
         /// </summary>
         private async Task<(GameStatus Status, string Feedback)> PlayRoundWithFeedbackAsync(string playerGuessing, string secret, int currentLives)
         {
@@ -225,7 +232,8 @@ namespace Hangman.Console
             _renderer.Clear();
             _renderer.ShowFeedback(_strings.RoundTitleNewRound, ConsoleColor.Cyan);
 
-            // Rita skärmen *före* timern startar för att undvika race condition
+            // Render the initial state before starting the timer to establish a stable cursor position
+            // and prevent concurrent timer output from racing with the first game-screen render.
             _renderer.DrawGameScreen(game, playerGuessing, currentLives, feedbackMessage);
 
             var roundCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
@@ -249,7 +257,7 @@ namespace Hangman.Console
                 }
                 catch (TaskCanceledException)
                 {
-                    // Förväntat fel när rundan avslutas
+                    // Cancellation is the expected completion path when the round ends before the timer expires.
                 }
             }, roundCts.Token);
 
@@ -269,9 +277,9 @@ namespace Hangman.Console
                             continue;
                         }
 
-                        if (guess == (char)1) // Ogiltig gissning
+                        if (guess == (char)1) // Invalid guess
                         {
-                            // GetGuess skrev redan ut felmeddelande
+                            // GetGuess has already displayed the validation feedback to avoid duplicating console output.
                         }
                         else
                         {
@@ -283,7 +291,8 @@ namespace Hangman.Console
                     }
                     catch (OperationCanceledException)
                     {
-                        // Timern gick ut!
+                        // The timer expired, so the round must be converted into an explicit loss
+                        // before control returns to the normal game-state rendering flow.
                         game.ForceLose();
                         feedbackMessage = _strings.RoundTimerExpired;
                     }
@@ -320,7 +329,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hanterar logiken för att hämta highscores och visa dem.
+        /// Retrieves the global high scores and delegates their presentation to the renderer.
         /// </summary>
         private async Task ShowHighscoresAsync()
         {
@@ -340,7 +349,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hanterar logiken för att lägga till ett nytt anpassat ord.
+        /// Validates and persists a custom word together with its derived difficulty and language.
         /// </summary>
         private async Task AddCustomWordAsync()
         {
@@ -382,6 +391,10 @@ namespace Hangman.Console
             _renderer.WaitForKey(_strings.CommonPressAnyKeyToContinue);
         }
 
+        /// <summary>
+        /// Determines the game's difficulty from the word length so that custom words
+        /// follow the same difficulty rules as words supplied by the other providers.
+        /// </summary>
         private WordDifficulty GetDifficultyByLength(string word)
         {
             if (word.Length <= 4) return WordDifficulty.Easy;
@@ -389,6 +402,10 @@ namespace Hangman.Console
             return WordDifficulty.Hard;
         }
 
+        /// <summary>
+        /// Displays the final tournament outcome, including the winner, loser,
+        /// draw state, and accumulated wins for both players.
+        /// </summary>
         private void ShowTournamentResult(TwoPlayerGame tournament)
         {
             _renderer.Clear();
@@ -418,6 +435,10 @@ namespace Hangman.Console
             _renderer.ShowFeedback(_strings.FeedbackTournamentPlayerWins(tournament.Player2.Name, tournament.Player2.Wins));
         }
 
+        /// <summary>
+        /// Retrieves a word from the selected provider while translating provider failures
+        /// into feedback appropriate for the console application.
+        /// </summary>
         private async Task<string?> GetWordFromProviderAsync(IAsyncWordProvider provider)
         {
             _renderer.Clear();
@@ -440,6 +461,9 @@ namespace Hangman.Console
             }
         }
 
+        /// <summary>
+        /// Prompts the user to select a difficulty and returns null when the selection is cancelled.
+        /// </summary>
         private WordDifficulty? SelectDifficulty(string source)
         {
             _renderer.Clear();
@@ -460,6 +484,9 @@ namespace Hangman.Console
             }
         }
 
+        /// <summary>
+        /// Creates the appropriate word provider based on the user's selected source and difficulty.
+        /// </summary>
         private (IAsyncWordProvider? Provider, WordDifficulty? Difficulty) SelectWordSource()
         {
             _renderer.Clear();
