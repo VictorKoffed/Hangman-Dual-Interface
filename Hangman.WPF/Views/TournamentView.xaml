@@ -1,4 +1,14 @@
-﻿<UserControl x:Class="Hangman.WPF.Views.TournamentView"
+<!-- 
+    This UserControl represents the Tournament Mode interface (Two-Player Game).
+    It is a complex view that manages three distinct visual states: 
+    1. Active gameplay (keyboard visible, round in progress).
+    2. Intermission/Round End (showing round results and "Next Round" button).
+    3. Tournament End (showing final winner and "Back to Menu" button).
+    
+    By utilizing WPF Triggers and Converters, this state machine is handled entirely 
+    declaratively in XAML, maintaining a strict MVVM architecture with zero code-behind logic.
+-->
+<UserControl x:Class="Hangman.WPF.Views.TournamentView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,22 +21,40 @@
              d:DesignHeight="600" d:DesignWidth="800">
 
     <UserControl.Resources>
+        <!-- 
+            Standard converter to map the ViewModel's boolean state to WPF's Visibility enum.
+            Keeps the ViewModel decoupled from UI-specific types.
+        -->
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
         <Style TargetType="Button" x:Key="KeyboardButton">
             <Setter Property="Width" Value="40"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="2"/>
-            <Setter Property="FontSize" 
-            Value="16"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <!-- 
+                CRITICAL ARCHITECTURAL DETAIL: 
+                These buttons are generated inside an ItemsControl. Therefore, their direct DataContext 
+                is the individual character (char) they represent, not the TournamentViewModel.
+                We must use a RelativeSource binding to traverse up the visual tree, locate the parent UserControl, 
+                and bind to the GuessCommand exposed by the root ViewModel.
+            -->
             <Setter Property="Command"
                     Value="{Binding DataContext.GuessCommand,
                                     RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <!-- The character itself is passed as the command parameter -->
             <Setter Property="CommandParameter" Value="{Binding}"/>
 
         </Style>
 
+        <!-- 
+            This style acts as a localized state machine for the intermission panel.
+            We use a MultiDataTrigger because the Round-End screen should only be visible if:
+            1. The current round is over (IsRoundInProgress = False).
+            2. BUT the tournament as a whole is still running (IsTournamentInProgress = True).
+            If the tournament is over, this panel must yield to the TournamentEndPanel.
+        -->
         <Style TargetType="StackPanel" x:Key="RoundEndPanelStyle">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
@@ -42,6 +70,9 @@
             </Style.Triggers>
         </Style>
 
+        <!-- 
+            Handles the final state. Simply waits for the entire tournament sequence to conclude.
+        -->
         <Style TargetType="StackPanel" x:Key="TournamentEndPanelStyle">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
@@ -55,6 +86,11 @@
 
     <Grid Margin="20">
 
+        <!-- 
+            The main gameplay grid. 
+            It automatically hides itself when the round ends, preventing players from continuing 
+            to interact with the keyboard or seeing the masked word during intermissions.
+        -->
         <Grid Visibility="{Binding IsRoundInProgress, Converter={StaticResource BoolToVis}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -72,9 +108,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Player 1 HUD -->
             <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,0,0,10">
                 <TextBlock Text="{Binding Player1.Name}" FontSize="18" FontWeight="Bold" Foreground="DodgerBlue"/>
 
+                <!-- 
+                    Using <Run> tags allows us to seamlessly concatenate localized strings (from our LocalizationProvider)
+                    with dynamic data (Player Lives/Wins) within a single TextBlock, avoiding complex string formatting in the ViewModel.
+                -->
                 <TextBlock FontSize="14">
                     <Run Text="{Binding Strings.TournamentHeaderLives, Mode=OneWay}"/>
                     <Run Text="{Binding Player1.Lives}" FontWeight="Bold"/>
@@ -86,6 +127,7 @@
                 </TextBlock>
             </StackPanel>
 
+            <!-- Player 2 HUD -->
             <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,10" TextBlock.TextAlignment="Right">
                 <TextBlock Text="{Binding Player2.Name}" FontSize="18" FontWeight="Bold" Foreground="OrangeRed"/>
 
@@ -138,6 +180,12 @@
                 FontSize="16" Foreground="Gray"
                        HorizontalAlignment="Center" Margin="0,10,0,20"/>
 
+            <!-- 
+                Dynamic Keyboard Generation.
+                Instead of hardcoding 26+ buttons, we bind an ItemsControl to an array of characters in the ViewModel.
+                This makes the UI highly adaptable to different alphabets (e.g., adding ÅÄÖ for Swedish) 
+                without modifying the XAML structure.
+            -->
             <ItemsControl Grid.Row="5" Grid.ColumnSpan="2"
                           ItemsSource="{Binding KeyboardLetters}"
                           
@@ -167,6 +215,7 @@
                     Padding="10"/>
         </Grid>
 
+        <!-- Intermission / Round End Overlay -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
                     Style="{StaticResource RoundEndPanelStyle}">
             <TextBlock Text="{Binding TournamentStatusMessage}"
@@ -191,6 +240,7 @@
                     FontSize="16"/>
         </StackPanel>
 
+        <!-- Final Tournament End Overlay -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Style="{StaticResource TournamentEndPanelStyle}">
             <TextBlock Text="{Binding TournamentEndMessage}"
