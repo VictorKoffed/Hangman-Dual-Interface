@@ -8,8 +8,8 @@ using Hangman.Core.Models;
 namespace Hangman.Core.Exceptions
 {
     /// <summary>
-    /// Kastas när ett försök görs att lägga till ett ord som redan finns 
-    /// i databasen med samma svårighetsgrad och språk.
+    /// Thrown when an attempt is made to add a word that already exists
+    /// in the database with the same difficulty and language.
     /// </summary>
     public class WordAlreadyExistsException : InvalidOperationException
     {
@@ -18,7 +18,7 @@ namespace Hangman.Core.Exceptions
         public WordLanguage Language { get; }
 
         public WordAlreadyExistsException(string word, WordDifficulty difficulty, WordLanguage language)
-            : base($"Word '{word}' already exists for {difficulty} ({language}).") // Generiskt engelskt meddelande för loggning
+            : base($"Word '{word}' already exists for {difficulty} ({language}).") // Generic English message intended for logging
         {
             Word = word;
             Difficulty = difficulty;
