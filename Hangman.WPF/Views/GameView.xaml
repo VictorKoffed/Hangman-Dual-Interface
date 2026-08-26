@@ -1,4 +1,10 @@
-﻿<UserControl x:Class="Hangman.WPF.Views.GameView"
+<!-- 
+    This UserControl represents the active single-player game session view.
+    It is designed to act as a reactive component, seamlessly toggling between the active gameplay state 
+    and the game-over screen using WPF Data Binding, Converters, and Triggers. 
+    This keeps the UI logic entirely declarative and tightly coupled to the ViewModel's state.
+-->
+<UserControl x:Class="Hangman.WPF.Views.GameView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,6 +25,12 @@
             <Setter Property="Margin" Value="2"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <!-- 
+                We must use a RelativeSource binding here. 
+                Since these buttons will be generated inside an ItemsControl, their immediate DataContext 
+                will be the individual character (char) they represent, not the GameViewModel. 
+                RelativeSource bridges this scope gap, allowing the button to invoke the parent ViewModel's GuessCommand.
+            -->
             <Setter Property="Command"
                     Value="{Binding DataContext.GuessCommand,
                                     RelativeSource={RelativeSource AncestorType=UserControl}}"/>
@@ -59,6 +71,11 @@
                        FontStyle="Italic"
                        FontFamily="Courier New"/>
 
+            <!-- 
+                This StackPanel encapsulates all interactive gameplay elements. 
+                By binding its Visibility to IsGameInProgress via the BoolToVis converter, 
+                we ensure the user cannot interact with the keyboard or see the masking once the game resolves.
+            -->
             <StackPanel Grid.Row="3" Grid.RowSpan="4"
                         Visibility="{Binding IsGameInProgress, Converter={StaticResource BoolToVis}}">
 
@@ -75,6 +92,12 @@
                            HorizontalAlignment="Center"
                            Margin="0,10,0,20"/>
 
+                <!-- 
+                    Utilizing an ItemsControl combined with a UniformGrid allows us to dynamically generate 
+                    the virtual keyboard based on an array provided by the ViewModel. 
+                    This adheres to the DRY principle and makes it trivial to support different language alphabets 
+                    (e.g., automatically appending Swedish ÅÄÖ) without duplicating UI code.
+                -->
                 <ItemsControl ItemsSource="{Binding KeyboardLetters}"
                               VerticalAlignment="Center">
                     <ItemsControl.ItemsPanel>
@@ -98,6 +121,12 @@
             </StackPanel>
         </Grid>
 
+        <!-- 
+            The Game Over overlay. 
+            Instead of writing a custom InverseBooleanToVisibilityConverter for this panel, 
+            we utilize a DataTrigger to achieve the inverse logic natively in XAML. 
+            It remains collapsed during gameplay and only becomes visible when IsGameInProgress turns False.
+        -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 50, 0, 0">
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
