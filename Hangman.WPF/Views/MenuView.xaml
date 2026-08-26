@@ -1,4 +1,10 @@
-﻿<UserControl x:Class="Hangman.WPF.Views.MenuView"
+<!-- 
+    This UserControl serves as the primary navigation hub (Main Menu) for the application.
+    In strict adherence to the MVVM architectural pattern, it contains no routing or state logic. 
+    Navigation is handled exclusively through declarative Command bindings, delegating execution 
+    to the MenuViewModel. This ensures the view is highly testable and loosely coupled.
+-->
+<UserControl x:Class="Hangman.WPF.Views.MenuView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              mc:Ignorable="d" 
@@ -7,8 +13,18 @@
              d:DesignHeight="500" d:DesignWidth="800">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="410">
 
+        <!-- 
+            The image source utilizes WPF's relative pack URI resolution. 
+            This ensures the asset is loaded directly from the compiled assembly resources, 
+            guaranteeing it resolves correctly regardless of the application's runtime execution path.
+        -->
         <Image Source="/Images/stage_6.png" Height="120" Margin="0,0,0,10" Stretch="Uniform"/>
 
+        <!-- 
+            All textual content is dynamically bound to the 'Strings' localization provider.
+            This architectural choice ensures the UI can seamlessly reflect runtime language changes 
+            without requiring application restarts or duplicated language-specific XAML files.
+        -->
         <TextBlock Text="{Binding Strings.MainMenuWpfTitle}" 
                    FontSize="36" 
                    FontWeight="ExtraBold" 
@@ -16,10 +32,19 @@
                    HorizontalAlignment="Center" 
                    Margin="0,0,0,40"/>
 
+        <!-- 
+            Commands are bound to the ViewModel to handle user intent. 
+            This completely separates the presentation layer from the business and navigation rules.
+        -->
         <Button Content="{Binding Strings.MenuPlaySingle}" Command="{Binding StartSinglePlayerCommand}" Margin="0,0,0,0" Padding="10" FontWeight="Bold" FontSize="16"/>
         <Button Content="{Binding Strings.MenuPlayTournament}" Command="{Binding StartTournamentCommand}" Margin="0,5,0,0" Padding="10" FontWeight="Bold" FontSize="16"/>
         <Button Content="{Binding Strings.MenuShowHighscores}" Command="{Binding NavigateToHighscoresCommand}" Margin="0,20" Padding="5"/>
 
+        <!-- 
+            A Grid with proportional ColumnDefinitions (Width="*") is used here instead of a horizontal StackPanel.
+            This ensures both buttons always share exactly 50% of the available width, maintaining 
+            a consistent, responsive alignment regardless of how long the localized text strings become.
+        -->
         <Grid Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
