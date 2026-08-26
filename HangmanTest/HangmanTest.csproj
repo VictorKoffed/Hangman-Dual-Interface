@@ -1,36 +1,67 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<!-- 
+    Project Configuration: Test Suite
+    This file defines the build configuration and dependencies for the unit testing project.
+    It is maintained as a separate project to ensure testing frameworks and code coverage tools 
+    do not leak into or bloat the production binaries.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!-- 
+            Explicitly disables packing for this project. Test assemblies should never be 
+            distributed as NuGet packages or accidentally published to production environments.
+        -->
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="6.0.4">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
-		<PackageReference Include="xunit" Version="2.9.3" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            Coverlet is included to automatically calculate code coverage metrics during test execution. 
+            This is critical for CI/CD pipelines to enforce quality gates (e.g., minimum test coverage percentage).
+        -->
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        
+        <!-- 
+            EF Core dependencies are included here to enable integration testing. 
+            This allows tests to spin up an actual SQLite database (e.g., in memory or temp storage) 
+            to verify repository behaviors, queries, and migrations under realistic conditions.
+        -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+        
+        <!-- Standard xUnit framework and test runner dependencies. -->
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+        <PackageReference Include="xunit" Version="2.9.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Hangman.Core\Hangman.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            Clean Architecture enforcement: 
+            The test project acts as an external consumer of the Core (domain) project. 
+            It strictly verifies the business rules without coupling to the UI (WPF/Console) layers.
+        -->
+        <ProjectReference Include="..\Hangman.Core\Hangman.Core.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Using Include="Xunit" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- 
+            Global usings keep test files clean and focused on business logic 
+            by removing redundant 'using Xunit;' boilerplate across the entire test suite.
+        -->
+        <Using Include="Xunit" />
+    </ItemGroup>
 
 </Project>
