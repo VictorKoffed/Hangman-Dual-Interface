@@ -1,7 +1,7 @@
-﻿/*
- * FILKOMMENTAR: Denna fil innehåller den centrala spelmekaniken och tillståndshanteringen (GameStatus). 
- * Denna logik har utvecklats i sammarbete med Unit Tests (enligt red, green, refactor-principen) 
- * med assistans från en stor språkmodell (AI) för att säkerställa robust kärnlogik.
+/*
+ * FILE COMMENT: This file contains the core game mechanics and state management (GameStatus).
+ * This logic was developed in collaboration with unit tests using the red, green, refactor
+ * principle, with assistance from a large language model (AI) to ensure robust core logic.
  */
 
 using Hangman.Core.Models;
@@ -12,7 +12,7 @@ using System.Text;
 namespace Hangman.Core
 {
     /// <summary>
-    /// Ansvarar för all kärnlogik i spelet Hänga Gubbe.
+    /// Responsible for the core game logic of Hangman.
     /// </summary>
     public sealed class Game
     {
@@ -41,8 +41,10 @@ namespace Hangman.Core
         // ──────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Startar en ny spelrunda.
-        /// Nollställer state, rensar använda bokstäver och ställer in nytt hemligt ord.
+        /// Starts a new game round.
+        /// Resets the round state, clears previously used letters, and assigns the new secret word.
+        /// Resetting all round-specific state is essential because a Game instance may be reused
+        /// for multiple rounds.
         /// </summary>
         public void StartNew(string word)
         {
@@ -56,8 +58,8 @@ namespace Hangman.Core
         }
 
         /// <summary>
-        /// Hanterar en bokstavsgissning.
-        /// Returnerar true om bokstaven finns i ordet, annars false.
+        /// Handles a letter guess.
+        /// Returns true when the letter exists in the secret word; otherwise returns false.
         /// </summary>
         public bool Guess(char letter)
         {
@@ -65,13 +67,14 @@ namespace Hangman.Core
 
             var c = char.ToUpperInvariant(letter);
 
-            // Ignorera dubblettgissningar
+            // Duplicate guesses must not consume another attempt, since they do not represent
+            // a new mistake and should therefore have no additional impact on the round state.
             if (_used.Contains(c))
                 return _secret.Contains(c);
 
             _used.Add(c);
 
-            // ───── Rätt gissning ───────────────────────────────
+            // ───── Correct guess ───────────────────────────────
             if (_secret.Contains(c))
             {
                 LetterGuessed?.Invoke(this, c);
@@ -85,7 +88,7 @@ namespace Hangman.Core
                 return true;
             }
 
-            // ───── Fel gissning ────────────────────────────────
+            // ───── Incorrect guess ────────────────────────────
             Mistakes++;
             WrongLetterGuessed?.Invoke(this, c);
 
@@ -99,7 +102,8 @@ namespace Hangman.Core
         }
 
         /// <summary>
-        /// Returnerar ordet i maskerat format.
+        /// Returns the secret word in masked form so that only correctly guessed letters
+        /// are revealed to the player.
         /// </summary>
         public string GetMaskedWord()
         {
@@ -118,14 +122,17 @@ namespace Hangman.Core
         private bool AllRevealed()
         {
             var needed = new HashSet<char>(_secret);
-            // Ignorera icke-bokstäver
+
+            // Non-letter characters are excluded because punctuation and other symbols
+            // do not represent guessable letters and therefore must not block a win.
             needed.RemoveWhere(ch => !char.IsLetter(ch));
             return needed.IsSubsetOf(_used);
         }
 
         /// <summary>
-        /// Tvingar spelet till förlust-läge.
-        /// Används om spelaren avbryter en runda eller om tiden går ut.
+        /// Forces the game into the loss state.
+        /// This is used when the player abandons a round or when the time limit expires,
+        /// ensuring both situations follow the same game-end event flow as a normal loss.
         /// </summary>
         public void ForceLose()
         {
