@@ -1,11 +1,11 @@
-﻿using Hangman.Core.Localizations;
+using Hangman.Core.Localizations;
 using Hangman.Core.Models;
 using System.Text;
 
 namespace Hangman.Console
 {
     /// <summary>
-    /// Hanterar all inmatning från konsolen.
+    /// Handles all user input from the console.
     /// </summary>
     public class ConsoleInput
     {
@@ -17,14 +17,15 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hämtar en enskild bokstavsgissning asynkront.
-        /// Avbryts av CancellationToken (timer).
-        /// Returnerar '\0' om användaren trycker Escape.
-        /// Kastar OperationCanceledException om timern går ut.
+        /// Asynchronously reads a single letter guess.
+        /// Cancellation is controlled by the provided token, which is used by the game timer.
+        /// Returns '\0' when the user presses Escape.
+        /// Throws OperationCanceledException when the timer expires.
         /// </summary>
         public async Task<char> GetGuess(IEnumerable<char> usedLetters, CancellationToken token)
         {
-            // Prompten skrivs ut av ConsoleRenderer.DrawGameScreen
+            // The prompt is rendered as part of the complete game screen so that all console output
+            // remains synchronized with the game's current state.
             while (!token.IsCancellationRequested)
             {
                 if (System.Console.KeyAvailable)
@@ -50,7 +51,7 @@ namespace Hangman.Console
                             System.Console.WriteLine(_strings.GetGuessInvalid(letter));
                             System.Console.ResetColor();
                         }
-                        return (char)1; // Signalera ogiltig gissning
+                        return (char)1; // Signal an invalid guess
                     }
 
                     char upperGuess = char.ToUpperInvariant(letter);
@@ -63,7 +64,7 @@ namespace Hangman.Console
                             System.Console.WriteLine(_strings.GetGuessAlreadyGuessed(upperGuess));
                             System.Console.ResetColor();
                         }
-                        return (char)1; // Signalera ogiltig gissning
+                        return (char)1; // Signal an invalid guess
                     }
 
                     lock (ConsoleRenderer.ConsoleLock)
@@ -73,7 +74,8 @@ namespace Hangman.Console
                     return upperGuess;
                 }
 
-                // Vänta 100ms för att undvika att CPU:n snurrar i 100%
+                // Polling is used here because Console.ReadKey cannot be awaited or directly cancelled.
+                // A short delay prevents this input loop from continuously consuming CPU while waiting.
                 await Task.Delay(100, token);
             }
 
@@ -81,8 +83,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hämtar ett spelarnamn. Säkerställer att det inte är tomt.
-        /// Returnerar null om användaren trycker Escape.
+        /// Reads a player name and ensures that it contains meaningful input.
+        /// Returns null when the user presses Escape.
         /// </summary>
         public string? GetPlayerName(string prompt)
         {
@@ -108,8 +110,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Generell metod för att hämta en sträng från användaren.
-        /// Hanterar Backspace och Escape.
+        /// Reads a string from the user while supporting Backspace and Escape.
+        /// The method returns null when the current input operation is cancelled with Escape.
         /// </summary>
         public string? GetInputString(string prompt)
         {
@@ -161,8 +163,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Väntar på ett menyval (t.ex. '1'-'6').
-        /// Returnerar '\0' vid Escape.
+        /// Waits for a valid menu selection, such as '1' through '6'.
+        /// Returns '\0' when Escape is allowed and pressed.
         /// </summary>
         public char GetMenuChoice(string validChars, bool allowEscape = false)
         {
@@ -191,8 +193,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Hämtar ett Ja/Nej-svar.
-        /// Returnerar true för 'J' (eller 'Y'), false för 'N' eller Escape.
+        /// Reads a Yes/No response.
+        /// Returns true for 'J' (or 'Y'), and false for 'N' or Escape.
         /// </summary>
         public bool GetYesNo(string prompt)
         {
@@ -227,8 +229,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar menyn för att välja språk (för anpassade ord).
-        /// Returnerar null vid Escape.
+        /// Displays the language selection menu used when adding custom words.
+        /// Returns null when the user cancels the selection with Escape.
         /// </summary>
         public WordLanguage? SelectLanguage()
         {
