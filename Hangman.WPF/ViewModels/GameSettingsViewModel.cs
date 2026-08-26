@@ -1,10 +1,13 @@
-﻿using Hangman.Core.Models;
+using Hangman.Core.Models;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Hangman.Core.Localizations;
 
 namespace Hangman.WPF.ViewModels
 {
+    /// <summary>
+    /// Provides the configuration state and commands required to start a new game.
+    /// </summary>
     public class GameSettingsViewModel : BaseViewModel
     {
         private readonly MainViewModel _mainViewModel;
@@ -16,7 +19,10 @@ namespace Hangman.WPF.ViewModels
 
         public bool IsTournamentMode { get; }
 
-        // NY IMPLEMENTATION: Returnerar KeyValuePair<WordDifficulty, string> för lokaliserade namn
+        /// <summary>
+        /// Provides difficulty options together with their localized display names,
+        /// allowing the UI to remain independent of the underlying enum values.
+        /// </summary>
         public IEnumerable<KeyValuePair<WordDifficulty, string>> LocalizedDifficulties
         {
             get
@@ -38,6 +44,10 @@ namespace Hangman.WPF.ViewModels
         public ICommand StartGameCommand { get; }
         public ICommand BackToMenuCommand { get; }
 
+        /// <summary>
+        /// Initializes the settings view model and establishes the appropriate
+        /// default player configuration for the selected game mode.
+        /// </summary>
         public GameSettingsViewModel(MainViewModel mainViewModel, GameMode mode, LocalizationProvider strings)
         {
             _mainViewModel = mainViewModel;
@@ -61,6 +71,10 @@ namespace Hangman.WPF.ViewModels
             BackToMenuCommand = new RelayCommand(_ => _mainViewModel.NavigateToMenu());
         }
 
+        /// <summary>
+        /// Starts the configured game while ensuring required player names have
+        /// meaningful localized defaults before navigation occurs.
+        /// </summary>
         private void StartGame(object? _)
         {
             if (string.IsNullOrWhiteSpace(CurrentSettings.PlayerName))
