@@ -1,4 +1,4 @@
-﻿using Hangman.Core;
+using Hangman.Core;
 using Hangman.Core.Exceptions;
 using Hangman.Core.Models;
 using Hangman.Core.Providers.Interface;
@@ -12,6 +12,11 @@ using System.Windows.Threading;
 
 namespace Hangman.WPF.ViewModels
 {
+    /// <summary>
+    /// Orchestrates the tournament mode between two players. 
+    /// Manages the local game state, the timer, alternating turns, and coordinates 
+    /// updates between the underlying core logic and the WPF UI.
+    /// </summary>
     public class TournamentViewModel : BaseViewModel
     {
         private readonly MainViewModel _mainViewModel;
@@ -21,6 +26,7 @@ namespace Hangman.WPF.ViewModels
         private readonly DispatcherTimer _timer;
         private readonly LocalizationProvider _strings;
 
+        // Visual fluff: Frames for a simple ASCII animation to simulate a swinging rope.
         private static readonly string[] _animFrames =
         {
             "*creak...* ","* *creak...* ","  *creak...* ","   *creak...* ","    *creak...* ","     *creak...* ",
@@ -66,6 +72,8 @@ namespace Hangman.WPF.ViewModels
             {
                 _isRoundInProgress = value;
                 OnPropertyChanged();
+                // When the round state changes (e.g., ends or starts), we must force the command binding 
+                // to re-evaluate so the virtual keyboard buttons lock or unlock immediately.
                 if (GuessCommand is RelayCommand rc) rc.RaiseCanExecuteChanged();
             }
         }
@@ -82,6 +90,9 @@ namespace Hangman.WPF.ViewModels
 
         public char[] KeyboardLetters { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ".ToCharArray();
 
+        /// <summary>
+        /// Initializes the tournament session, binds event listeners to the core game logic, and triggers the first round.
+        /// </summary>
         public TournamentViewModel(MainViewModel mainViewModel, IAsyncWordProvider provider, GameSettings settings, LocalizationProvider strings)
         {
             _mainViewModel = mainViewModel;
@@ -92,6 +103,8 @@ namespace Hangman.WPF.ViewModels
             _tournament = new TwoPlayerGame(settings.PlayerName, settings.PlayerName2, _wordProvider);
             _game = new Game(6);
 
+            // Subscribe to domain events. This keeps our ViewModel passively reacting to domain changes
+            // rather than actively polling or embedding core game logic within the UI layer.
             _game.LetterGuessed += OnGameUpdated;
             _game.WrongLetterGuessed += OnGameUpdated;
             _game.GameEnded += OnRoundEnded;
@@ -105,9 +118,15 @@ namespace Hangman.WPF.ViewModels
 
             MaskedWord = _strings.FeedbackFetchingWord("...");
 
+            // Fire-and-forget initialization of the first round.
             _ = StartNewRound();
         }
 
+        /// <summary>
+        /// Detaches all event handlers to prevent memory leaks.
+        /// Core domain objects (like _game) or timers can outlive the UI component. 
+        /// Unsubscribing ensures this ViewModel can be garbage collected when navigating away.
+        /// </summary>
         private void CleanupEvents()
         {
             _timer.Stop();
@@ -127,8 +146,13 @@ namespace Hangman.WPF.ViewModels
             _mainViewModel.NavigateToMenu();
         }
 
+        /// <summary>
+        /// Prepares the state for a new round and asynchronously fetches a new word.
+        /// </summary>
         private async Task StartNewRound()
         {
+            // Reset local UI states immediately to clear residual data from the previous round 
+            // before the potentially slow async word-fetch blocks the progression.
             IsRoundInProgress = true;
             TournamentStatusMessage = string.Empty;
             MaskedWord = _strings.FeedbackFetchingWord("...");
@@ -144,7 +168,8 @@ namespace Hangman.WPF.ViewModels
             string? word;
             try
             {
-                // ÄNDRING 1/3: Anropar den uppdaterade metoden som returnerar string?
+                // Retrieve the next word for the round. The asynchronous method returns a nullable string 
+                // where a null value gracefully signals the end of the tournament word pool.
                 word = await _tournament.StartNewRoundAsync();
             }
             catch (NoCustomWordsFoundException ex)
@@ -159,7 +184,8 @@ namespace Hangman.WPF.ViewModels
                 _mainViewModel.NavigateToMenu();
                 return;
             }
-            // ÄNDRING 2/3: Tar bort catch för InvalidOperationException som användes för flödeskontroll
+            // Catching generic exceptions to handle unexpected network or API failures.
+            // We avoid using exceptions (like InvalidOperationException) for standard flow control.
             catch (Exception ex)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -168,12 +194,14 @@ namespace Hangman.WPF.ViewModels
                         _strings.ErrorCouldNotFetchTournamentWord(ex.Message),
                         _strings.ErrorApiGeneric);
                 });
+                // Fallback word on API failure so the game doesn't crash completely.
                 _game.StartNew("APIERROR");
                 UpdateUiProperties();
                 return;
             }
 
-            // ÄNDRING 3/3: Ny null-kontroll för att hantera att turneringen är avslutad
+            // A null word signifies that the tournament has naturally concluded 
+            // (e.g., word list exhausted or win criteria met).
             if (word == null)
             {
                 EndTournament();
@@ -185,10 +213,14 @@ namespace Hangman.WPF.ViewModels
             SecondsLeft = 60;
             _timer.Start();
 
-            // Tvingar WPF att utvärdera GuessCommand.CanExecute igen, vilket återställer knapparna.
+            // Force WPF's input manager to immediately re-evaluate the CanExecute state 
+            // of the guess buttons, enabling them for the new round.
             if (GuessCommand is RelayCommand rc) rc.RaiseCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Handles the finalization of the tournament mode, evaluating the overall winner.
+        /// </summary>
         private void EndTournament()
         {
             IsTournamentInProgress = false;
@@ -226,6 +258,7 @@ namespace Hangman.WPF.ViewModels
                 _timer.Stop();
                 CreakAnimationText = string.Empty;
                 TournamentStatusMessage = _strings.RoundTimerExpired;
+                // Forcing a loss synchronizes the core domain state with the UI timeout event.
                 _game.ForceLose();
             }
         }
@@ -234,6 +267,7 @@ namespace Hangman.WPF.ViewModels
         {
             if (parameter is char letter)
             {
+                // Disallow guessing if the round is over, or if the letter has already been played.
                 return IsRoundInProgress && !_game.UsedLetters.Contains(letter);
             }
             return false;
@@ -260,20 +294,22 @@ namespace Hangman.WPF.ViewModels
             IsRoundInProgress = false;
             CreakAnimationText = string.Empty;
 
-            // FIX: Hämta namnet PÅ SPELAREN som GISSADE INNAN turen byts.
+            // CRITICAL: We must snapshot the active player's name BEFORE invoking HandleRoundEnd.
+            // HandleRoundEnd transitions the game state to the next player's turn. If we construct 
+            // the message after that call, it will attribute the win/loss to the wrong player.
             string playerNameWhoJustPlayed = _tournament.CurrentPlayerName;
 
             _tournament.HandleRoundEnd(status);
 
             if (status == GameStatus.Won)
             {
-                // Använd det sparade namnet.
+                // Use the preserved player name.
                 TournamentStatusMessage = $"{playerNameWhoJustPlayed} {_strings.RoundWon} {_strings.EndScreenCorrectWord(_game.Secret)}";
             }
             else
             {
                 if (string.IsNullOrEmpty(TournamentStatusMessage))
-                    // Använd det sparade namnet.
+                    // Use the preserved player name.
                     TournamentStatusMessage = $"{playerNameWhoJustPlayed} {_strings.RoundLost} {_strings.EndScreenCorrectWord(_game.Secret)}";
             }
 
@@ -289,6 +325,10 @@ namespace Hangman.WPF.ViewModels
             GallowsImageSource = Pack($"/Images/stage_{_game.Mistakes}.png");
         }
 
+        /// <summary>
+        /// Helper method to format absolute WPF Pack URIs for resource resolution.
+        /// Required by WPF to locate static assets like images compiled into the assembly.
+        /// </summary>
         private static string Pack(string relative) =>
             $"pack://application:,,,/Hangman.WPF;component{relative}";
     }
