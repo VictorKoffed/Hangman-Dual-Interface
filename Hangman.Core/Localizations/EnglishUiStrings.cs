@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +8,15 @@ using Hangman.Core.Models;
 
 namespace Hangman.Core.Localizations
 {
+    /// <summary>
+    /// Provides English UI text for the application.
+    /// Keeping UI text behind this abstraction allows the application logic to remain
+    /// independent of the selected language and supports consistent localization across
+    /// both console and WPF interfaces.
+    /// </summary>
     public class EnglishUiStrings : IUiStrings
     {
-        // Välkomstskärm
+        // Welcome screen
         // ... (ASCII ART)
         public string WelcomeTitleArt => @"                                                              ___________.._______
      _   _    _    _   _  ____ __  __    _    _   _          | .__________))______|
@@ -40,7 +46,7 @@ namespace Hangman.Core.Localizations
         public string WelcomeMessage => "\n\n          Welcome to HANGMAN!";
         public string WelcomePressAnyKey => "     Press any key to start...";
 
-        // Huvudmeny
+        // Main menu
         // ... (ASCII ART)
         public string MainMenuTitleArt => @"
      _   _    _    _   _  ____ __  __    _    _   _
@@ -71,7 +77,7 @@ namespace Hangman.Core.Localizations
         public string MenuChoicePrompt => "\nYour choice (1-6): ";
         public string FeedbackThanksForPlaying => "Thanks for playing!";
 
-        // Val av ordkälla
+        // Word source selection
         public string SelectWordSourceTitle => "--- CHOOSE WORD LIST ---";
         public string SelectWordSourceApi => "1. English (API - varied length)";
         public string SelectWordSourceLocal => "2. Swedish (Local list)";
@@ -83,7 +89,7 @@ namespace Hangman.Core.Localizations
         public string FeedbackWordSourceCustomSwedish => "Custom Word List (Swedish)";
         public string FeedbackWordSourceCustomEnglish => "Custom Word List (English)";
 
-        // Val av svårighetsgrad
+        // Difficulty selection
         public string SelectDifficultyTitle(string source) => $"--- CHOOSE DIFFICULTY ({source}) ---";
         public string SelectDifficultyEasy => "1. Easy (3-4 letters)";
         public string SelectDifficultyMedium => "2. Medium (5-7 letters)";
@@ -93,13 +99,13 @@ namespace Hangman.Core.Localizations
         public string FeedbackDifficultyMedium => "Medium";
         public string FeedbackDifficultyHard => "Hard";
 
-        // Gemensamt
+        // Common
         public string CommonPressEscapeToCancel => "(Press Escape at any time to cancel)";
         public string CommonPressAnyKeyToContinue => "\nPress any key to return to the menu...";
         public string CommonFeedbackCancelling => "Cancelling...";
         public string CommonErrorDatabaseError(string message) => $"\nA database error occurred: {message}";
 
-        // Spela (Enspelare)
+        // Single-player mode
         public string PromptPlayerName => "Enter your name for the highscore: ";
         public string FeedbackFetchingWord(string source) => $"Fetching word from: {source}...";
         public string ErrorCouldNotStartGame(string message) => $"\nCould not start game (Word list error):\n{message}";
@@ -111,7 +117,7 @@ namespace Hangman.Core.Localizations
         public string FeedbackHighscoreSaved(int wins, WordDifficulty difficulty) => $"\nHighscore ({wins} wins in a row) saved for {difficulty}!";
         public string FeedbackReturningToMenu => "\nReturning to main menu...";
 
-        // Spela (Turnering)
+        // Tournament mode
         public string TournamentTitle => "--- TWO PLAYER TOURNAMENT ---";
         public string PromptPlayer1Name => "Enter name for Player 1: ";
         public string PromptPlayer2Name => "Enter name for Player 2: ";
@@ -138,7 +144,7 @@ namespace Hangman.Core.Localizations
         public string HighscoreDifficultyHeader(WordDifficulty difficulty) => $"\n--- DIFFICULTY: {difficulty} ---";
         public string HighscoreEntry(int rank, string name, int wins) => $"{rank}. {name} - {wins} wins in a row.";
 
-        // Lägg till ord
+        // Add word
         public string AddWordTitle => "--- ADD NEW WORD ---";
         public string AddWordPrompt => "Enter the word (A-Z): ";
         public string AddWordInvalid => "\nInvalid word. Please use letters only.";
@@ -149,7 +155,7 @@ namespace Hangman.Core.Localizations
         public string AddWordLanguageSwedish => "1. Swedish";
         public string AddWordLanguageEnglish => "2. English";
 
-        // Hjälpskärm
+        // Help screen
         public string HelpTitle => "--- HELP / HOW TO PLAY ---";
         public string HelpLine1 => "The game is about guessing the secret word, one letter at a time.";
         public string HelpLine2 => "You have 6 guesses before the man is hung (MAX 6 mistakes).";
@@ -161,7 +167,7 @@ namespace Hangman.Core.Localizations
         public string HelpSourcesLine2 => "  Local: Swedish words from a built-in list.";
         public string HelpSourcesLine3 => "  Custom: Words that you have added yourself (both Swedish and English).";
 
-        // Spelrunda
+        // Game round
         public string RoundTitleNewRound => "--- NEW ROUND STARTED ---";
         public string RoundTitleGame => "--- HANGMAN ---";
         public string RoundActivePlayer => "Active player:";
@@ -175,13 +181,13 @@ namespace Hangman.Core.Localizations
         public string RoundLost => "lost the round.";
         public string RoundWon => "won the round!";
 
-        // Slutskärm
+        // End screen
         public string EndScreenCongrats => "\nCONGRATULATIONS, YOU WON!";
         public string EndScreenCancelled => "\nYou cancelled the round.";
         public string EndScreenLost => "\nYOU LOST...";
         public string EndScreenCorrectWord(string secret) => $"The correct word was: {secret}";
 
-        // Input-hantering
+        // Input handling
         public string GetGuessPrompt => "Guess a letter (or Escape to give up): ";
         public string GetGuessInvalid(char letter) => $"\nInvalid guess '{letter}'. Only letters (A-Z).";
         public string GetGuessAlreadyGuessed(char letter) => $"\nYou have already guessed '{letter}'. Try again.";
@@ -195,11 +201,11 @@ namespace Hangman.Core.Localizations
         public string ErrorNoCustomWordsFound(WordDifficulty difficulty, WordLanguage language)
             => $"\nCould not start game: No custom words found in the list for {difficulty} ({language}). Please add words via the menu.";
 
-        // --- NYTT FÖR TIMER ---
+        // --- NEW STRINGS FOR TIMER ---
         public string RoundTimerDisplay(int seconds) => $"Time left: {seconds:D2}s";
         public string RoundTimerExpired => "Time's up!";
 
-        // ========== NYA STRÄNGAR FÖR WPF ==========
+        // ========== NEW STRINGS FOR WPF ==========
         public string ButtonBackToMenu => "Back to Menu";
         public string MainMenuWpfTitle => "WPF HANGMAN";
         public string LanguageSelectorTitle => "Välj språk / Select language";
