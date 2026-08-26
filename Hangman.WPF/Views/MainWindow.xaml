@@ -1,4 +1,10 @@
-﻿<Window x:Class="Hangman.WPF.Views.MainWindow"
+<!-- 
+    This Window serves as the root application shell. 
+    Instead of opening and closing multiple operating system windows, the application acts similarly 
+    to a Single Page Application (SPA). All navigation is handled internally by swapping out UserControls,
+    which provides a smoother user experience and centralizes window state management.
+-->
+<Window x:Class="Hangman.WPF.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,7 +15,15 @@
         
         mc:Ignorable="d"
         Title="WPF Hangman" Height="650" Width="800">
+    
     <Window.Resources>
+        <!-- 
+            Implicit DataTemplates form the backbone of our MVVM routing strategy.
+            By mapping a specific ViewModel type to its corresponding View (UserControl), 
+            we completely decouple the application logic from the presentation layer.
+            The MainViewModel orchestrates navigation solely by changing data objects, 
+            and WPF's templating engine automatically resolves and renders the correct UI.
+        -->
         <DataTemplate DataType="{x:Type viewmodels:LanguageSelectionViewModel}">
             <views:LanguageSelectionView />
         </DataTemplate>
@@ -38,6 +52,12 @@
         </DataTemplate>
     </Window.Resources>
 
+    <!-- 
+        The ContentControl acts as the dynamic viewport for the application. 
+        Because it is bound to the 'CurrentViewModel' property, any time the MainViewModel updates this property, 
+        WPF intercepts the change, matches the new ViewModel's type against the DataTemplates defined above, 
+        and seamlessly injects the correct View into the visual tree.
+    -->
     <ContentControl Content="{Binding CurrentViewModel}" />
 
 </Window>
