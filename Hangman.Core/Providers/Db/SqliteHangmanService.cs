@@ -1,8 +1,8 @@
-﻿/*
- * FILKOMMENTAR: Denna fil innehåller all logik för databasåtkomst (CRUD-operationer)
- * för statistik och highscore med Entity Framework Core. Implementeringen av
- * dataabstraktion och asynkrona databasoperationer har utvecklats med assistans
- * från en stor språkmodell (AI).
+/*
+ * FILE COMMENT: This file contains all database access logic (CRUD operations)
+ * for statistics and high scores using Entity Framework Core. The data abstraction
+ * and asynchronous database operations were developed with assistance
+ * from a large language model (AI).
  */
 
 using System;
@@ -17,13 +17,19 @@ using Microsoft.EntityFrameworkCore;
 namespace Hangman.Core.Providers.Db
 {
     /// <summary>
-    /// Implementerar IStatisticsService genom att spara highscores i en SQLite-databas 
-    /// med hjälp av Entity Framework Core.
+    /// Implements <see cref="IStatisticsService"/> by persisting high scores
+    /// in a SQLite database using Entity Framework Core.
     /// </summary>
     public class SqliteHangmanService : IStatisticsService
     {
         private HangmanDbContext CreateContext() => new HangmanDbContext();
 
+        /// <summary>
+        /// Saves a high score only when it represents a meaningful result,
+        /// and replaces an existing record only when the new result is better.
+        /// This preserves the best achievement for each player and difficulty
+        /// rather than allowing weaker results to overwrite it.
+        /// </summary>
         public async Task SaveHighscoreAsync(HighscoreEntry newScore)
         {
             if (newScore.ConsecutiveWins <= 0) return;
@@ -62,8 +68,10 @@ namespace Hangman.Core.Providers.Db
         }
 
         /// <summary>
-        /// Ser till att endast de X bästa poängen
-        /// för en given svårighetsgrad finns kvar i databasen.
+        /// Ensures that only the top <paramref name="topN"/> scores
+        /// for a given difficulty remain in the database.
+        /// Keeping the table bounded prevents obsolete ranking entries
+        /// from accumulating when new high scores are recorded.
         /// </summary>
         private async Task PruneScoresAsync(HangmanDbContext context, WordDifficulty difficulty, int topN)
         {
@@ -80,6 +88,11 @@ namespace Hangman.Core.Providers.Db
             }
         }
 
+        /// <summary>
+        /// Retrieves all high scores for the specified difficulty in ranking order.
+        /// No-tracking queries are used because the returned entries are read-only
+        /// and do not need to be tracked for later persistence.
+        /// </summary>
         public async Task<List<HighscoreEntry>> GetHighscoresAsync(WordDifficulty difficulty)
         {
             using (var context = CreateContext())
@@ -92,6 +105,11 @@ namespace Hangman.Core.Providers.Db
             }
         }
 
+        /// <summary>
+        /// Retrieves the top scores for every difficulty so the application can
+        /// present a combined global ranking while still preserving representation
+        /// from each difficulty level.
+        /// </summary>
         public async Task<List<HighscoreEntry>> GetGlobalTopScoresAsync(int topN = 5)
         {
             using (var context = CreateContext())
