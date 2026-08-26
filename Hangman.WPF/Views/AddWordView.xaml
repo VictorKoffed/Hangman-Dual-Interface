@@ -1,4 +1,10 @@
-﻿<UserControl x:Class="Hangman.WPF.Views.AddWordView"
+<!-- 
+    This UserControl represents the view layer for adding custom words to the local database. 
+    It adheres to the MVVM pattern by maintaining zero code-behind logic and relying entirely 
+    on DataBinding to communicate with the AddWordViewModel. All textual content is bound 
+    through the 'Strings' localization provider to ensure the UI can switch languages seamlessly.
+-->
+<UserControl x:Class="Hangman.WPF.Views.AddWordView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              mc:Ignorable="d" 
@@ -10,6 +16,13 @@
         <TextBlock Text="{Binding Strings.AddWordTitle}" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
         <TextBlock Text="{Binding Strings.AddWordPrompt}" Margin="0,10,0,0"/>
+        
+        <!-- 
+            UpdateSourceTrigger=PropertyChanged is explicitly used here instead of the default LostFocus. 
+            This ensures the ViewModel receives the updated text immediately on every keystroke, 
+            which is critical for instantly re-evaluating the AddWordCommand's CanExecute state 
+            (e.g., instantly disabling the save button if invalid characters are typed).
+        -->
         <TextBox Text="{Binding NewWord, UpdateSourceTrigger=PropertyChanged}" Margin="0,5" Padding="5" FontSize="16"/>
 
         <TextBlock Text="{Binding Strings.AddWordLabelLanguage}" Margin="0,10,0,0"/>
@@ -18,6 +31,11 @@
 
         <Button Content="{Binding Strings.AddWordButtonSave}" Command="{Binding AddWordCommand}" Margin="0,20" Padding="10" FontWeight="Bold" FontSize="16"/>
 
+        <!-- 
+            MinHeight=40 is intentionally set to reserve physical screen space for the message. 
+            This prevents the UI elements below it (like the Back button) from jarringly jumping up and down 
+            when the feedback message transitions between an empty string and a validation/success message.
+        -->
         <TextBlock Text="{Binding FeedbackMessage}" FontSize="14" Foreground="Green" TextWrapping="Wrap" MinHeight="40"/>
 
         <Button Content="{Binding Strings.ButtonBackToMenu}" Command="{Binding BackToMenuCommand}" HorizontalAlignment="Center" Margin="0,20" Padding="10"/>
