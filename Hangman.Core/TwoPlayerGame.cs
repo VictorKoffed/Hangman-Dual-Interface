@@ -1,7 +1,7 @@
-﻿/*
- * FILKOMMENTAR: Denna fil hanterar den komplexa tillståndshanteringen för ett spel mellan två spelare,
- * inklusive att dölja det hemliga ordet och spåra spelförloppet. Denna logik har strukturerats
- * med assistans från en stor språkmodell (AI).
+/*
+ * FILE COMMENT: This file handles the complex state management for a two-player game,
+ * including hiding the secret word and tracking the game progression. This logic
+ * was structured with assistance from a large language model (AI).
  */
 
 using System;
@@ -15,7 +15,7 @@ using Hangman.Core.Models;
 namespace Hangman.Core
 {
     /// <summary>
-    /// Representerar en spelare i 2-spelarläget.
+    /// Represents a player in two-player mode.
     /// </summary>
     public class Player
     {
@@ -32,7 +32,8 @@ namespace Hangman.Core
     }
 
     /// <summary>
-    /// Hanterar turneringen mellan två spelare med liv, runda-logik och vinstvillkor.
+    /// Manages the tournament between two players, including lives, round progression,
+    /// and victory conditions.
     /// </summary>
     public class TwoPlayerGame
     {
@@ -46,17 +47,19 @@ namespace Hangman.Core
         public Game? CurrentRound { get; private set; }
 
         /// <summary>
-        /// Namnet på spelaren vars tur det är att gissa.
+        /// Gets the name of the player whose turn it is to guess.
         /// </summary>
         public string CurrentPlayerName => CurrentGuesser?.Name ?? "Inget";
 
         /// <summary>
-        /// Status på turneringen.
+        /// Gets the current status of the tournament.
         /// </summary>
         public GameStatus TournamentStatus { get; private set; } = GameStatus.InProgress;
 
         /// <summary>
-        /// Initierar en ny 2-spelarturnering.
+        /// Initializes a new two-player tournament.
+        /// The starting player is randomized so neither player consistently receives
+        /// the first-turn advantage across separate tournaments.
         /// </summary>
         public TwoPlayerGame(string p1Name, string p2Name, IAsyncWordProvider wordProvider)
         {
@@ -68,17 +71,19 @@ namespace Hangman.Core
         }
 
         /// <summary>
-        /// Startar en ny spelrunda. Ordet hämtas från den konfigurerade ordkällan.
-        /// Returnerar det hemliga ordet, eller null om turneringen är avslutad.
+        /// Starts a new game round by retrieving a word from the configured provider.
+        /// Returns the secret word, or null when the tournament has already reached
+        /// a terminal state.
         /// </summary>
-        /// <returns>Det hemliga ordet.</returns>
+        /// <returns>The secret word, or null if the tournament has ended.</returns>
         public async Task<string?> StartNewRoundAsync()
         {
             Player opponent = (CurrentGuesser == Player1) ? Player2 : Player1;
 
             if (opponent.Lives <= 0)
             {
-                // Motståndaren har 0 liv. Använd Wins som tie-breaker.
+                // When the opponent has no remaining lives, the number of wins determines
+                // the winner; equal win counts result in a draw rather than another round.
                 if (Player1.Wins != Player2.Wins)
                 {
                     TournamentStatus = GameStatus.Lost;
@@ -91,7 +96,7 @@ namespace Hangman.Core
 
             if (TournamentStatus != GameStatus.InProgress)
             {
-                return null; // NYTT: Returnerar null istället för att kasta exception
+                return null; // NEW: Returns null instead of throwing an exception
             }
 
             string secret = await _wordProvider.GetWordAsync();
@@ -103,9 +108,10 @@ namespace Hangman.Core
         }
 
         /// <summary>
-        /// Hanterar resultatet av den nyss avslutade rundan och uppdaterar spelarnas liv och turordning.
+        /// Handles the result of the most recently completed round and updates
+        /// the players' lives and turn order.
         /// </summary>
-        /// <param name="roundResult">Resultatet av rundan (Won eller Lost).</param>
+        /// <param name="roundResult">The result of the round (Won or Lost).</param>
         public void HandleRoundEnd(GameStatus roundResult)
         {
             if (CurrentGuesser == null)
@@ -115,7 +121,7 @@ namespace Hangman.Core
 
             Player guessingPlayer = CurrentGuesser;
 
-            // 1. Hantera Liv och Wins
+            // 1. Handle Lives and Wins
             if (roundResult == GameStatus.Won)
             {
                 guessingPlayer.Wins++;
@@ -126,12 +132,13 @@ namespace Hangman.Core
                 guessingPlayer.Lives--;
             }
 
-            // 2. Byt Gissare
+            // 2. Switch Guesser
             CurrentGuesser = (CurrentGuesser == Player1) ? Player2 : Player1;
         }
 
         /// <summary>
-        /// Returnerar den spelare som vann turneringen, eller null om den fortfarande pågår eller blev oavgjord.
+        /// Returns the player who won the tournament, or null while the tournament
+        /// is still in progress or ended in a draw.
         /// </summary>
         public Player? GetWinner()
         {
@@ -145,7 +152,8 @@ namespace Hangman.Core
                 return Player2;
             }
 
-            // Tie-breaker när båda har 0 liv (TournamentStatus = Draw)
+            // When both players have no lives remaining, wins are used as the tie-breaker.
+            // Equal win counts intentionally produce no winner because the tournament is a draw.
             if (Player1.Lives <= 0 && Player2.Lives <= 0)
             {
                 if (Player1.Wins > Player2.Wins)
