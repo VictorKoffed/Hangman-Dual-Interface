@@ -1,4 +1,12 @@
-﻿<UserControl x:Class="Hangman.WPF.Views.LanguageSelectionView"
+<!-- 
+    This UserControl represents the initial language selection screen presented on startup.
+    In the context of the application's architecture, this view must be rendered first. 
+    By enforcing language selection before navigating to the main menu, we ensure that the 
+    LocalizationProvider is fully initialized with a specific strategy (Swedish or English). 
+    This guarantees that all subsequent views will correctly render their text bindings 
+    without falling back to defaults or displaying empty strings.
+-->
+<UserControl x:Class="Hangman.WPF.Views.LanguageSelectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,10 +15,20 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="342" Height="208">
 
+        <!-- 
+            Even though this is the language selection screen, its text elements are still dynamically bound 
+            to the 'Strings' provider. This makes the view strictly adhere to the MVVM pattern. 
+            If the localization strategy changes dynamically, the view will instantly react and update 
+            itself without requiring any imperative code-behind logic.
+        -->
         <TextBlock Text="{Binding Strings.LanguageSelectorTitle}" 
                    FontSize="24" FontWeight="Bold" 
                    HorizontalAlignment="Center" Margin="0,0,0,30"/>
 
+        <!--
+            These commands are responsible for completely swapping out the IUiStrings implementation 
+            inside the application's localization provider before navigating the user to the main menu.
+        -->
         <Button Content="{Binding Strings.LanguageButtonSwedish}" 
                 Command="{Binding SelectSwedishCommand}" 
                 Margin="0,5" Padding="10" FontSize="18" FontWeight="Bold"/>
