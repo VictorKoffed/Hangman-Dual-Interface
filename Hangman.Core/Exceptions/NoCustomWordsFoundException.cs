@@ -8,8 +8,8 @@ using Hangman.Core.Models;
 namespace Hangman.Core.Exceptions
 {
     /// <summary>
-    /// Kastas när en spelrunda försöker hämta ett ord från en anpassad ordlista
-    /// som är tom för de valda kriterierna.
+    /// Thrown when a game round attempts to retrieve a word from a custom word list
+    /// that contains no words matching the selected criteria.
     /// </summary>
     public class NoCustomWordsFoundException : InvalidOperationException
     {
@@ -17,7 +17,7 @@ namespace Hangman.Core.Exceptions
         public WordLanguage Language { get; }
 
         public NoCustomWordsFoundException(WordDifficulty difficulty, WordLanguage language)
-            : base($"No custom words found for {difficulty} ({language}).") // Generiskt engelskt meddelande för loggning
+            : base($"No custom words found for {difficulty} ({language}).") // Generic English message intended for logging
         {
             Difficulty = difficulty;
             Language = language;
