@@ -1,8 +1,8 @@
-﻿/*
- * FILKOMMENTAR: Denna ViewModel hanterar all UI-logik för själva spelet (GameView),
- * inklusive bindning av knappar, uppdatering av gissningslistan, bildkälla och
- * hantering av spelstatusändringar. Denna komplexa UI/affärslogik-integration
- * har utvecklats med assistans från en stor språkmodell (AI).
+/*
+ * FILE COMMENT: This ViewModel handles all UI logic for the game itself (GameView),
+ * including button bindings, updating the guess list, image source, and
+ * handling game state changes. The integration between UI and business logic
+ * is intentionally kept here so the core game logic remains independent of WPF.
  */
 
 using Hangman.Core;
@@ -18,10 +18,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-// using System.Reflection; // Reflection är borttagen
+// using System.Reflection; // Reflection has been removed
 
 namespace Hangman.WPF.ViewModels
 {
+    /// <summary>
+    /// Coordinates the game state with the WPF UI, including word retrieval,
+    /// user guesses, round timing, game results, and score persistence.
+    /// </summary>
     public class GameViewModel : BaseViewModel
     {
         private readonly MainViewModel _mainViewModel;
@@ -73,6 +77,10 @@ namespace Hangman.WPF.ViewModels
 
         public char[] KeyboardLetters { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ".ToCharArray();
 
+        /// <summary>
+        /// Initializes the ViewModel and connects the core game events to the
+        /// corresponding UI updates and game lifecycle handlers.
+        /// </summary>
         public GameViewModel(MainViewModel mainViewModel, IAsyncWordProvider wordProvider, IStatisticsService statisticsService, string playerName, LocalizationProvider strings)
         {
             _mainViewModel = mainViewModel;
@@ -107,6 +115,10 @@ namespace Hangman.WPF.ViewModels
             _game.GameEnded -= OnGameEnded;
         }
 
+        /// <summary>
+        /// Starts a new round and resets the UI state so the previous round
+        /// cannot leak guesses, hangman progress, or timer state into the new one.
+        /// </summary>
         private async Task StartNewRound()
         {
             IsGameInProgress = true;
@@ -150,7 +162,8 @@ namespace Hangman.WPF.ViewModels
             SecondsLeft = 60;
             _timer.Start();
 
-            // Fix: Tvinga UI att utvärdera GuessCommand.CanExecute igen, vilket återställer knapparna.
+            // Force the UI to re-evaluate GuessCommand.CanExecute so the keyboard
+            // becomes available again after the previous round has ended.
             if (GuessCommand is RelayCommand rc) rc.RaiseCanExecuteChanged();
         }
 
@@ -193,6 +206,10 @@ namespace Hangman.WPF.ViewModels
             UpdateUiProperties();
         }
 
+        /// <summary>
+        /// Finalizes the current round, updates the player's streak, and
+        /// persists the score when a winning streak is interrupted.
+        /// </summary>
         private async void OnGameEnded(object? sender, GameStatus status)
         {
             _timer.Stop();
@@ -243,7 +260,8 @@ namespace Hangman.WPF.ViewModels
 
         private async Task SaveHighscoreAsync()
         {
-            // FIX: Använder nu det publika interfacet istället för Reflection.
+            // Use the public interface rather than Reflection so the ViewModel
+            // depends on the provider contract instead of its concrete implementation.
             WordDifficulty difficulty = _wordProvider.Difficulty;
 
             var newScore = new HighscoreEntry
