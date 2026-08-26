@@ -1,4 +1,4 @@
-﻿using Hangman.Core.Models;
+using Hangman.Core.Models;
 using Hangman.Core.Providers.Interface;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -9,6 +9,10 @@ using System.Windows;
 
 namespace Hangman.WPF.ViewModels
 {
+    /// <summary>
+    /// Provides the state and commands required to display highscore data
+    /// while keeping data access and navigation concerns outside the view.
+    /// </summary>
     public class HighscoreViewModel : BaseViewModel
     {
         private readonly MainViewModel _mainViewModel;
@@ -24,6 +28,10 @@ namespace Hangman.WPF.ViewModels
 
         public ICommand BackToMenuCommand { get; }
 
+        /// <summary>
+        /// Initializes the ViewModel and starts loading highscores so the view
+        /// can remain responsive while database access is performed asynchronously.
+        /// </summary>
         public HighscoreViewModel(MainViewModel mainViewModel, IStatisticsService statisticsService, LocalizationProvider strings)
         {
             _mainViewModel = mainViewModel;
@@ -37,6 +45,10 @@ namespace Hangman.WPF.ViewModels
             Task.Run(LoadHighscores);
         }
 
+        /// <summary>
+        /// Loads the global highscores and updates the observable collection on
+        /// the UI thread so the view can react immediately to the resulting state.
+        /// </summary>
         private async Task LoadHighscores()
         {
             try
