@@ -4,94 +4,94 @@
 [![WPF](https://img.shields.io/badge/WPF-MVVM-blue?style=flat&logo=windows&logoColor=white)](#-arkitektur)
 [![xUnit](https://img.shields.io/badge/Tests-xUnit-5A2A83?style=flat)](#-testning)
 
-Ett C#-projekt för **Hänga Gubbe** med stöd för både konsol och ett grafiskt **WPF-gränssnitt** byggt med **MVVM**. Projektet använder bland annat Clean Architecture-inspirerad struktur, TDD och stöd för svenska och engelska.
+A C# project for **Hangman** with support for both console and a graphical **WPF interface** built using **MVVM**. The project uses a Clean Architecture-inspired structure, TDD, and support for both Swedish and English.
 
 ---
 
-## Innehåll
+## Contents
 
-- [Projektstruktur](#-projektstruktur)
-- [Mappstruktur](#-mappstruktur)
-- [Kom igång (Build & Run)](#-kom-igång-build--run)
-  - [Förutsättningar](#förutsättningar)
-  - [Köra via Visual Studio (rekommenderat)](#köra-via-visual-studio-rekommenderat)
-  - [Köra via kommandoraden (dotnet-cli)](#köra-via-kommandoraden-dotnet-cli)
-- [Databashantering](#-databashantering)
-- [Funktioner](#-funktioner)
-- [Arkitektur](#-arkitektur)
-- [Avancerade C#-koncept som används](#-avancerade-c-koncept-som-används)
-- [Testning](#-testning)
-- [Skärmbilder](#-skärmbilder)
-- [Tillgångar (Sprites & Bilder)](#-tillgångar-sprites--bilder)
-- [Katalog över viktiga filer](#-katalog-över-viktiga-filer)
-- [Projekt & Kurskontext](#-projekt--kurskontext)
-- [AI-assistans](#-ai-assistans-och-kodgenerering)
+- [Project Structure](#-project-structure)
+- [Folder Structure](#-folder-structure)
+- [Getting Started (Build & Run)](#-getting-started-build--run)
+  - [Prerequisites](#prerequisites)
+  - [Running via Visual Studio (recommended)](#running-via-visual-studio-recommended)
+  - [Running via the Command Line (dotnet CLI)](#running-via-the-command-line-dotnet-cli)
+- [Database Management](#️-database-management)
+- [Features](#️-features)
+- [Architecture](#-architecture)
+- [Advanced C# Concepts Used](#-advanced-c-concepts-used)
+- [Testing](#-testing)
+- [Screenshots](#️-screenshots)
+- [Assets (Sprites & Images)](#-assets-sprites--images)
+- [Directory of Key Files](#-directory-of-key-files)
+- [Project & Course Context](#-project--course-context)
+- [AI Assistance](#-ai-assistance)
 
 ---
 
-## 📁 Projektstruktur
+## 📁 Project Structure
 
-Lösningen är uppdelad i fyra projekt där varje projekt har ett eget ansvar:
+The solution is divided into four projects, each with its own responsibility:
 
-| Projekt | Typ | Syfte |
+| Project | Type | Purpose |
 |:---|:---|:---|
-| `Hangman.Core` | Class Library | Innehåller spel-logik, modeller, ordkällor, statistik och språkstöd. |
-| `Hangman.Console` | Console App | Det körbara konsolbaserade spelet. |
-| `Hangman.WPF` | WPF App | Grafiskt gränssnitt byggt med MVVM. |
-| `HangmanTest` | xUnit Tests | Enhetstester för `Hangman.Core`. |
+| `Hangman.Core` | Class Library | Contains game logic, models, word providers, statistics, and localization. |
+| `Hangman.Console` | Console App | The executable console-based game. |
+| `Hangman.WPF` | WPF App | Graphical interface built using MVVM. |
+| `HangmanTest` | xUnit Tests | Unit tests for `Hangman.Core`. |
 
 ---
 
-## 🧱 Mappstruktur
+## 🧱 Folder Structure
 
 ```text
 Hangman/
 ├─ Hangman.Core/
-│  ├─ Game.cs                  # Kärnlogik för en spelrunda
-│  ├─ TwoPlayerGame.cs         # Logik för turneringsläge (2 spelare)
-│  ├─ Models/                  # Datamodeller (HighscoreEntry, CustomWordEntry, ...)
+│  ├─ Game.cs                  # Core logic for a game round
+│  ├─ TwoPlayerGame.cs         # Logic for tournament mode (2 players)
+│  ├─ Models/                  # Data models (HighscoreEntry, CustomWordEntry, ...)
 │  ├─ Providers/
 │  │  ├─ Db/                   # EF Core (HangmanDbContext, SqliteHangmanService)
-│  │  ├─ Api/                  # ApiWordProvider (externa ord via HttpClient)
-│  │  └─ Local/                # Lokala och egna ordkällor
+│  │  ├─ Api/                  # ApiWordProvider (external words via HttpClient)
+│  │  └─ Local/                # Local and custom word providers
 │  └─ Localizations/           # IUiStrings, SwedishUiStrings, EnglishUiStrings
 │
 ├─ Hangman.Console/
-│  ├─ Program.cs               # Startpunkt för konsolapplikationen
-│  ├─ GameController.cs        # Huvudloop och hantering av spelet
-│  ├─ ConsoleInput.cs          # Inmatning från användaren
-│  └─ ConsoleRenderer.cs       # Utskrift till konsolen
+│  ├─ Program.cs               # Entry point for the console application
+│  ├─ GameController.cs        # Main loop and game handling
+│  ├─ ConsoleInput.cs          # User input
+│  └─ ConsoleRenderer.cs       # Console output
 │
 ├─ Hangman.WPF/
-│  ├─ App.xaml(.cs)            # Start, manuell DI och lokalisering
-│  ├─ Views/                   # XAML-vyer (MainWindow, GameView, MenuView, ...)
-│  └─ ViewModels/              # UI-logik (MainViewModel, GameViewModel, ...)
+│  ├─ App.xaml(.cs)            # Startup, manual DI, and localization
+│  ├─ Views/                   # XAML views (MainWindow, GameView, MenuView, ...)
+│  └─ ViewModels/              # UI logic (MainViewModel, GameViewModel, ...)
 │
 └─ HangmanTest/
-   └─ GameTests.cs             # xUnit-tester för kärnlogiken
+   └─ GameTests.cs             # xUnit tests for the core logic
 ```
 
 ---
 
-## 🚀 Kom igång (Build & Run)
+## 🚀 Getting Started (Build & Run)
 
-### Förutsättningar
+### Prerequisites
 
-- **.NET 8 SDK** (målram: `net8.0`)
-- **Windows** (krävs för WPF)
-- **Visual Studio 2022** med workload **“.NET desktop development”**
+- **.NET 8 SDK** (target framework: `net8.0`)
+- **Windows** (required for WPF)
+- **Visual Studio 2022** with the **“.NET desktop development”** workload
 
-### Köra via Visual Studio (rekommenderat)
+### Running via Visual Studio (recommended)
 
-1. Klona repot och öppna **`Hangman.sln`** i Visual Studio.
-2. Välj vilket projekt som ska startas:
-   - **Konsol:** högerklicka `Hangman.Console` → **Set as Startup Project**
-   - **WPF:** högerklicka `Hangman.WPF` → **Set as Startup Project**
-3. Tryck **F5** för att starta.
+1. Clone the repository and open **`Hangman.sln`** in Visual Studio.
+2. Select which project to start:
+   - **Console:** right-click `Hangman.Console` → **Set as Startup Project**
+   - **WPF:** right-click `Hangman.WPF` → **Set as Startup Project**
+3. Press **F5** to start.
 
-### Köra via kommandoraden (dotnet CLI)
+### Running via the Command Line (dotnet CLI)
 
-#### Konsol
+#### Console
 
 ```bash
 cd Hangman/Hangman.Console
@@ -100,7 +100,7 @@ dotnet run
 
 #### WPF
 
-WPF-versionen kräver Windows:
+The WPF version requires Windows:
 
 ```bash
 cd Hangman/Hangman.WPF
@@ -109,46 +109,46 @@ dotnet run
 
 ---
 
-## 🗄️ Databashantering
+## 🗄️ Database Management
 
-Projektet använder **SQLite** tillsammans med **Entity Framework Core**.
+The project uses **SQLite** together with **Entity Framework Core**.
 
-- Databasen `Hangman.db` skapas automatiskt vid första körningen.
-- `HangmanDbContext` använder `Database.EnsureCreated()`.
-- Databasfilen skapas normalt under exempelvis:
+- The `Hangman.db` database is created automatically on the first run.
+- `HangmanDbContext` uses `Database.EnsureCreated()`.
+- The database file is normally created under, for example:
 
 ```text
 bin/Debug/net8.0/
 ```
 
-Ingen manuell migrering krävs för att komma igång med projektet.
+No manual migrations are required to get started with the project.
 
-Databasen används bland annat för:
+The database is used for, among other things:
 
-- Highscores
-- Egna ord
-- Spelarrelaterad statistik
-
----
-
-## ⚙️ Funktioner
-
-- **Två gränssnitt** – spela via konsol eller WPF.
-- **Flerspråksstöd** – växla mellan svenska och engelska.
-- **SQLite + EF Core** – highscores och egna ord sparas i `Hangman.db`.
-- **Highscore-system** – sparar consecutive wins per spelare och svårighetsgrad.
-- **Egna ordlistor** – användaren kan lägga till egna ord på svenska eller engelska.
-- **Turneringsläge** – två spelare med tre liv var.
-- **Speltimer** – 60 sekunder per runda i både singleplayer och tournament.
-- **Flexibel ordhantering** – ord kan hämtas asynkront från API, databas eller lokala ordkällor.
-- **API-integration** – engelska ord kan hämtas från ett externt API.
-- **Separering av konsollogik** – `ConsoleInput` och `ConsoleRenderer` håller inmatning och rendering separerade från spellogiken.
+- High scores
+- Custom words
+- Player-related statistics
 
 ---
 
-## 🧱 Arkitektur
+## ⚙️ Features
 
-Projektet är uppdelat så att spellogiken ligger separat från de olika gränssnitten.
+- **Two interfaces** – play via the console or WPF.
+- **Multilingual support** – switch between Swedish and English.
+- **SQLite + EF Core** – high scores and custom words are stored in `Hangman.db`.
+- **High-score system** – stores consecutive wins per player and difficulty level.
+- **Custom word lists** – users can add their own words in Swedish or English.
+- **Tournament mode** – two players with three lives each.
+- **Game timer** – 60 seconds per round in both single-player and tournament modes.
+- **Flexible word handling** – words can be retrieved asynchronously from an API, database, or local word providers.
+- **API integration** – English words can be retrieved from an external API.
+- **Separation of console logic** – `ConsoleInput` and `ConsoleRenderer` keep input and rendering separate from the game logic.
+
+---
+
+## 🧱 Architecture
+
+The project is structured so that the game logic is kept separate from the different interfaces.
 
 ```mermaid
 graph LR
@@ -164,72 +164,72 @@ graph LR
 
 ### MVVM
 
-WPF-applikationen använder MVVM för att separera gränssnittet från logiken.
+The WPF application uses MVVM to separate the user interface from the logic.
 
-- **View** – XAML-vyerna som användaren ser.
-- **ViewModel** – hanterar UI-logik och data binding.
-- **Model/Core** – innehåller själva spelreglerna och datamodellerna.
+- **View** – the XAML views displayed to the user.
+- **ViewModel** – handles UI logic and data binding.
+- **Model/Core** – contains the game rules and data models.
 
 ### Clean Architecture
 
-`Hangman.Core` innehåller den centrala spellogiken och är inte beroende av WPF- eller konsolprojektet.
+`Hangman.Core` contains the central game logic and does not depend on the WPF or console project.
 
-Det gör att samma spel-logik kan användas från både konsolapplikationen och WPF-applikationen.
+This allows the same game logic to be used by both the console application and the WPF application.
 
 ### Strategy Pattern
 
-Strategy Pattern används bland annat för:
+The Strategy Pattern is used for, among other things:
 
-- `IAsyncWordProvider` – olika sätt att hämta ord.
-- `IUiStrings` – olika språk.
+- `IAsyncWordProvider` – different ways of retrieving words.
+- `IUiStrings` – different languages.
 
-Det gör att ordkälla och språk kan bytas utan att ändra den centrala spellogiken.
+This allows the word provider and language to be changed without modifying the central game logic.
 
-### Manuell Dependency Injection
+### Manual Dependency Injection
 
-Projektet använder manuell DI där tjänster och providers skapas i:
+The project uses manual DI, with services and providers created in:
 
-- `App.xaml.cs` för WPF
-- `Program.cs` för Console
+- `App.xaml.cs` for WPF
+- `Program.cs` for Console
 
 ---
 
-## 🧩 Avancerade C#-koncept som används
+## 🧩 Advanced C# Concepts Used
 
-| Område | Exempel i koden | Förklaring |
+| Area | Example in Code | Explanation |
 |:---|:---|:---|
-| **Asynkron programmering** | `async Task RunAsync()`, `await _wordProvider.GetWordAsync()` | Används bland annat vid hämtning av ord, timers och UI-händelser. |
-| **Data Binding (MVVM)** | `INotifyPropertyChanged`, `ICommand` | ViewModels meddelar UI:t när data ändras och knappar kopplas till kommandon. |
-| **Events & Delegates** | `Game.GameEnded += OnGameEnded` | Spelet kan meddela UI-lagret när exempelvis en runda avslutas. |
-| **Strategy Pattern** | `IUiStrings`, `IAsyncWordProvider` | Gör det möjligt att byta språk och ordkälla utan att ändra spel-logiken. |
-| **LINQ** | `context.Highscores.OrderBy(...).Take(n)` | Används för filtrering och sortering av data. |
-| **Collections** | `HashSet<char>`, `ObservableCollection<T>` | `HashSet` används bland annat för gissningar och `ObservableCollection` för listor i WPF. |
-| **Anpassad felhantering** | `NoCustomWordsFoundException` | Eget undantag som används när det saknas anpassade ord. |
+| **Asynchronous Programming** | `async Task RunAsync()`, `await _wordProvider.GetWordAsync()` | Used for tasks such as retrieving words, timers, and UI events. |
+| **Data Binding (MVVM)** | `INotifyPropertyChanged`, `ICommand` | ViewModels notify the UI when data changes, and buttons are connected to commands. |
+| **Events & Delegates** | `Game.GameEnded += OnGameEnded` | The game can notify the UI layer when, for example, a round ends. |
+| **Strategy Pattern** | `IUiStrings`, `IAsyncWordProvider` | Makes it possible to switch languages and word providers without modifying the game logic. |
+| **LINQ** | `context.Highscores.OrderBy(...).Take(n)` | Used for filtering and sorting data. |
+| **Collections** | `HashSet<char>`, `ObservableCollection<T>` | `HashSet` is used for guesses, among other things, while `ObservableCollection` is used for lists in WPF. |
+| **Custom Exception Handling** | `NoCustomWordsFoundException` | Custom exception used when no custom words are available. |
 
 ---
 
-## 🧪 Testning
+## 🧪 Testing
 
-Projektet använder **xUnit** för enhetstester.
+The project uses **xUnit** for unit testing.
 
-**Testprojekt:** `HangmanTest`
+**Test project:** `HangmanTest`
 
-**Testfil:** `HangmanTest/GameTests.cs`
+**Test file:** `HangmanTest/GameTests.cs`
 
-Tester finns bland annat för:
+Tests cover, among other things:
 
-- Initiering av spel
-- Rätta och felaktiga gissningar
-- Dubbelgissningar
-- Vinst- och förlustvillkor
-- Eventflöden
-- Tomma ord
-- Specialtecken
-- Case-insensitivity
+- Game initialization
+- Correct and incorrect guesses
+- Duplicate guesses
+- Win and loss conditions
+- Event flows
+- Empty words
+- Special characters
+- Case insensitivity
 
-### Köra tester
+### Running Tests
 
-Kör följande kommando från solutionens rot:
+Run the following command from the solution root:
 
 ```bash
 dotnet test
@@ -237,7 +237,7 @@ dotnet test
 
 ---
 
-## 🖼️ Skärmbilder
+## 🖼️ Screenshots
 
 ### Hangman.WPF – GameView
 
@@ -261,23 +261,23 @@ dotnet test
 
 ---
 
-## 📚 Katalog över viktiga filer
+## 📚 Directory of Key Files
 
 <details>
 <summary><strong>Hangman.Core</strong></summary>
 
-- `Game.cs` – Spelregler och rundlogik
-- `TwoPlayerGame.cs` – Turneringsläge med två spelare och livsystem
-- `Providers/Db/` – `HangmanDbContext` och `SqliteHangmanService`
-- `Providers/Api/ApiWordProvider.cs` – Hämtar ord via `HttpClient`
-- `Localizations/` – `IUiStrings`, `SwedishUiStrings` och `EnglishUiStrings`
+- `Game.cs` – Game rules and round logic
+- `TwoPlayerGame.cs` – Tournament mode with two players and a life system
+- `Providers/Db/` – `HangmanDbContext` and `SqliteHangmanService`
+- `Providers/Api/ApiWordProvider.cs` – Retrieves words via `HttpClient`
+- `Localizations/` – `IUiStrings`, `SwedishUiStrings`, and `EnglishUiStrings`
 
 </details>
 
 <details>
 <summary><strong>Hangman.WPF</strong></summary>
 
-- `App.xaml(.cs)` – Start, DI och språkinställningar
+- `App.xaml(.cs)` – Startup, DI, and language settings
 - `Views/` – `MainWindow.xaml`, `GameView.xaml`, `MenuView.xaml`, ...
 - `ViewModels/` – `MainViewModel`, `GameViewModel`, `HighscoreViewModel`, ...
 
@@ -286,51 +286,51 @@ dotnet test
 <details>
 <summary><strong>Hangman.Console</strong></summary>
 
-- `Program.cs` – Startpunkt för konsolapplikationen
-- `GameController.cs` – Hanterar spel-loopen
-- `ConsoleInput.cs` – Hanterar användarens inmatning
-- `ConsoleRenderer.cs` – Hanterar utskrift till konsolen
+- `Program.cs` – Entry point for the console application
+- `GameController.cs` – Handles the game loop
+- `ConsoleInput.cs` – Handles user input
+- `ConsoleRenderer.cs` – Handles console output
 
 </details>
 
 ---
 
-## 👥 Projekt & Kurskontext
+## 👥 Project & Course Context
 
-Detta projekt utvecklades i samarbete med en annan student som en del av kursen:
+This project was developed in collaboration with another student as part of the course:
 
-**Avancerad programmering med C# (7,5 hp)**  
+**Advanced C# Programming (7.5 credits)**  
 (*Advanced C# Programming, 7.5 credits*)
 
-Projektet genomfördes som ett pararbete där fokus låg på att använda C#-funktioner och designmönster i ett större projekt.
+The project was completed as pair work, with a focus on applying C# features and design patterns in a larger project.
 
-### 🎯 Fokus i projektet
+### 🎯 Project Focus
 
-Arbetet omfattade bland annat:
+The work covered, among other things:
 
-- Asynkron programmering och events
-- Designmönster som Strategy Pattern och MVVM
-- Testning med xUnit
-- Databashantering med EF Core och SQLite
-- Utveckling av både konsolapplikation och WPF-gränssnitt
-- Separation av spellogik och användargränssnitt
+- Asynchronous programming and events
+- Design patterns such as the Strategy Pattern and MVVM
+- Testing with xUnit
+- Database management with EF Core and SQLite
+- Development of both a console application and a WPF interface
+- Separation of game logic and user interface
 
-### 🧠 Erfarenheter
+### 🧠 Experience Gained
 
-Under projektet fick vi bland annat arbeta med:
+During the project, we worked with:
 
-- Objektorienterad och avancerad C#-utveckling
-- Asynkron programmering
-- WPF och MVVM
-- Enhetstestning med xUnit
-- EF Core och SQLite
-- Designmönster och projektstruktur
-- Att använda samma kärnlogik från flera olika gränssnitt
+- Object-oriented and advanced C# development
+- Asynchronous programming
+- WPF and MVVM
+- Unit testing with xUnit
+- EF Core and SQLite
+- Design patterns and project structure
+- Reusing the same core logic across multiple interfaces
 
 ---
 ## 📜 License
 
-Detta projekt distribueras under **MIT License**.
+This project is distributed under the **MIT License**.
 
 ```text
 MIT License
@@ -359,29 +359,29 @@ SOFTWARE.
 
 ---
 
-## 🤖 AI-assistans och kodgenerering
+## 🤖 AI Assistance and Code Generation
 
-AI-verktyg har använts som stöd under utvecklingen av projektet.
+AI tools were used as support during the development of the project.
 
-### 🛠️ Verktyg som använts
+### 🛠️ Tools Used
 
-- **ChatGPT** – hjälp med algoritmer, problemlösning och dokumentation.
-- **Copilot** – autokomplettering, boilerplate och tester.
+- **ChatGPT** – assistance with algorithms, problem-solving, and documentation.
+- **Copilot** – autocompletion, boilerplate, and tests.
 
-### 🎯 Hur AI användes
+### 🎯 How AI Was Used
 
-AI användes bland annat för:
+AI was used for, among other things:
 
-- Förslag på implementationer och algoritmer.
-- Boilerplate-kod och klassstruktur.
-- Felsökning.
-- Tester.
-- Dokumentation.
+- Suggestions for implementations and algorithms.
+- Boilerplate code and class structure.
+- Debugging.
+- Tests.
+- Documentation.
 
-### 👁️ Mänsklig granskning
+### 👁️ Human Review
 
-Kod som genererats med hjälp av AI har granskats och testats manuellt innan den använts i projektet.
+Code generated with the help of AI was manually reviewed and tested before being used in the project.
 
-Projektgruppen ansvarar för den slutliga koden och implementationen.
+The project team is responsible for the final code and implementation.
 
 ---
