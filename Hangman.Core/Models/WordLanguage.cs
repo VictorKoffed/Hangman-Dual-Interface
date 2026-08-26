@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Hangman.Core.Models
 {
     /// <summary>
-    /// Definierar språket för en ordlista, primärt för anpassade ord.
+    /// Defines the language associated with a word list, primarily for custom words.
     /// </summary>
     public enum WordLanguage
     {
