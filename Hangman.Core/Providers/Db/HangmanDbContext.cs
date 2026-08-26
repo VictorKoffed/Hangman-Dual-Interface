@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,7 @@ using System.IO;
 namespace Hangman.Core.Providers.Db
 {
     /// <summary>
-    /// EF Core databas-kontext för Highscores och Custom Words.
+    /// Provides the Entity Framework Core database context for high scores and custom words.
     /// </summary>
     public class HangmanDbContext : DbContext
     {
@@ -34,12 +34,14 @@ namespace Hangman.Core.Providers.Db
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Gör kombinationen av namn och svårighetsgrad unik för Highscores
+            // A player should have only one high-score record per difficulty level,
+            // preventing multiple records from representing the same logical ranking entry.
             modelBuilder.Entity<HighscoreEntry>()
                 .HasIndex(h => new { h.PlayerName, h.Difficulty })
                 .IsUnique();
 
-            // Gör kombinationen av ord, svårighetsgrad OCH språk unik
+            // The same word may legitimately exist in different languages or difficulty levels,
+            // but an identical combination must only be stored once to prevent duplicate custom words.
             modelBuilder.Entity<CustomWordEntry>()
                 .HasIndex(w => new { w.Word, w.Difficulty, w.Language })
                 .IsUnique();
