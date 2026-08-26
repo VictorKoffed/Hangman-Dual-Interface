@@ -1,16 +1,16 @@
-﻿using Hangman.Core.Localizations;
+using Hangman.Core.Localizations;
 using Hangman.Core;
 using Hangman.Core.Models;
 
 namespace Hangman.Console
 {
     /// <summary>
-    /// Hanterar all rendering till konsolen.
-    /// Ansvarar för att rita menyer, spelskärmar, ASCII-konst och feedback.
+    /// Handles all rendering to the console.
+    /// Responsible for drawing menus, game screens, ASCII art, and feedback.
     /// </summary>
     public class ConsoleRenderer
     {
-        // Låsobjekt för att synkronisera all konsol-I/O (publika så att ConsoleInput kan använda samma)
+        // Shared lock ensures that concurrent timer, input, and rendering operations cannot corrupt the console output.
         public static readonly object ConsoleLock = new object();
 
         private readonly IUiStrings _strings;
@@ -30,7 +30,7 @@ namespace Hangman.Console
         private const int TimerTopPos = 1;
 
         private const int AnimLeftPos = 4;
-        private const int AnimTopPos = 10; // Under galgen
+        private const int AnimTopPos = 10; // Positioned below the gallows
 
         private static readonly string[] _animFrames =
         {
@@ -98,7 +98,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Ritar spelskärmen baserat på spelets nuvarande tillstånd.
+        /// Draws the game screen based on the current state of the game.
         /// </summary>
         public void DrawGameScreen(Game game, string playerGuessing, int currentLives, string feedbackMessage)
         {
@@ -145,14 +145,14 @@ namespace Hangman.Console
                     System.Console.ResetColor();
                 }
 
-                // Skriv ut gissningsprompten här istället för i ConsoleInput
-                // Detta säkerställer att markören återställs korrekt efter timer-uppdateringar
+                // The prompt is rendered with the complete game screen rather than by ConsoleInput.
+                // Keeping it here ensures the cursor is restored to a predictable position after timer updates.
                 System.Console.Write(_strings.GetGuessPrompt);
             }
         }
 
         /// <summary>
-        /// Ritar galgen baserat på antal fel.
+        /// Draws the gallows based on the number of mistakes.
         /// </summary>
         public void DrawHangman(int mistakes)
         {
@@ -166,7 +166,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar slutskärmen för en avslutad runda.
+        /// Displays the end screen for a completed round.
         /// </summary>
         public void ShowEndScreen(Game game, string feedbackMessage)
         {
@@ -196,7 +196,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Ritar hjälpskärmen.
+        /// Displays the help screen.
         /// </summary>
         public void ShowHelpScreen()
         {
@@ -218,7 +218,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar Highscore-listan.
+        /// Displays the high-score list.
         /// </summary>
         public void ShowHighscores(List<HighscoreEntry> topScores)
         {
@@ -248,7 +248,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar ett färglagt feedback-meddelande.
+        /// Displays a color-coded feedback message.
         /// </summary>
         public void ShowFeedback(string message, ConsoleColor color = ConsoleColor.Gray)
         {
@@ -261,7 +261,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar ett standardiserat felmeddelande.
+        /// Displays a standardized error message.
         /// </summary>
         public void ShowError(string message)
         {
@@ -274,7 +274,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Visar en prompt och väntar på en tangenttryckning.
+        /// Displays a prompt and waits for a key press.
         /// </summary>
         public void WaitForKey(string prompt)
         {
@@ -286,8 +286,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Ritar timer-displayen på en fast position.
-        /// Används av den parallella timer-tasken.
+        /// Draws the timer display at a fixed console position.
+        /// This is used by the parallel timer task without rebuilding the entire game screen.
         /// </summary>
         public void DrawTimer(int secondsLeft)
         {
@@ -306,7 +306,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Rensar timer-displayen när rundan är över.
+        /// Clears the timer display when the round has ended.
         /// </summary>
         public void ClearTimerArea()
         {
@@ -323,8 +323,8 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Ritar den parallella "hänggubbe-animationen" (knarrande).
-        /// Används av den parallella timer-tasken.
+        /// Draws the parallel creaking gallows animation.
+        /// This is used by the parallel timer task to provide visual feedback while time is running.
         /// </summary>
         public void DrawAnimation(int secondsLeft)
         {
@@ -346,7 +346,7 @@ namespace Hangman.Console
         }
 
         /// <summary>
-        /// Rensar animations-displayen när rundan är över.
+        /// Clears the animation display when the round has ended.
         /// </summary>
         public void ClearAnimationArea()
         {
