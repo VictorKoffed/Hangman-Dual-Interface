@@ -1,4 +1,4 @@
-﻿using Hangman.Core.Exceptions;
+using Hangman.Core.Exceptions;
 using Hangman.Core.Models;
 using Hangman.Core.Providers.Db;
 using Hangman.Core.Providers.Interface;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Hangman.Core.Providers.Local
 {
     /// <summary>
-    /// Hämtar och sparar anpassade ord till SQLite-databasen.
+    /// Retrieves and stores custom words in the SQLite database.
     /// </summary>
     public sealed class CustomWordProvider : IAsyncWordProvider
     {
@@ -29,11 +29,15 @@ namespace Hangman.Core.Providers.Local
 
         public string DifficultyName => $"Anpassad Ordlista ({_language} - {_difficulty})";
 
-        // IMPLEMENTATION: Nu publik och läsbar via interfacet
+        /// <summary>
+        /// Gets the difficulty configured for this provider so consumers can use
+        /// custom word sources through the same provider abstraction as other word sources.
+        /// </summary>
+        // IMPLEMENTATION: Now public and exposed through the interface
         public WordDifficulty Difficulty => _difficulty;
 
         /// <summary>
-        /// Sparar ett nytt ord till den anpassade ordlistan i databasen.
+        /// Saves a new word to the custom word list in the database.
         /// </summary>
         public async Task AddWordAsync(string word, WordDifficulty difficulty, WordLanguage language)
         {
@@ -49,7 +53,8 @@ namespace Hangman.Core.Providers.Local
 
             using (var context = new HangmanDbContext())
             {
-                // Kollar unicitet (Word, Difficulty, Language)
+                // Enforces the business rule that the same word may only exist once
+                // for a specific combination of word, difficulty, and language.
                 if (await context.CustomWords.AnyAsync(e =>
                     e.Word == newEntry.Word &&
                     e.Difficulty == newEntry.Difficulty &&
@@ -63,6 +68,11 @@ namespace Hangman.Core.Providers.Local
             }
         }
 
+        /// <summary>
+        /// Retrieves a random word matching the provider's configured difficulty and language.
+        /// A random selection ensures that repeated game rounds do not always use the same word
+        /// when a custom word list contains multiple valid entries.
+        /// </summary>
         public async Task<string> GetWordAsync(CancellationToken ct = default)
         {
             List<string> availableWords;
