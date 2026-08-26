@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +8,18 @@ using Hangman.Core.Models;
 namespace Hangman.Core.Localizations
 {
     /// <summary>
-    /// Definierar kontraktet för alla UI-strängar (Strategy Pattern).
-    /// ConsoleUi kommer att använda detta interface istället för hårdkodade strängar.
+    /// Defines the contract for all UI strings used by the application.
+    /// Implementations provide language-specific text so presentation logic
+    /// does not need to contain hard-coded user-facing strings.
     /// </summary>
     public interface IUiStrings
     {
-        // Välkomstskärm
+        // Welcome screen
         string WelcomeTitleArt { get; }
         string WelcomeMessage { get; }
         string WelcomePressAnyKey { get; }
 
-        // Huvudmeny
+        // Main menu
         string MainMenuTitleArt { get; }
         string MainMenuGallowsArt { get; }
         string MainMenuTitle { get; }
@@ -31,7 +32,7 @@ namespace Hangman.Core.Localizations
         string MenuChoicePrompt { get; }
         string FeedbackThanksForPlaying { get; }
 
-        // Val av ordkälla
+        // Word source selection
         string SelectWordSourceTitle { get; }
         string SelectWordSourceApi { get; }
         string SelectWordSourceLocal { get; }
@@ -43,7 +44,7 @@ namespace Hangman.Core.Localizations
         string FeedbackWordSourceCustomSwedish { get; }
         string FeedbackWordSourceCustomEnglish { get; }
 
-        // Val av svårighetsgrad
+        // Difficulty selection
         string SelectDifficultyTitle(string source);
         string SelectDifficultyEasy { get; }
         string SelectDifficultyMedium { get; }
@@ -53,13 +54,13 @@ namespace Hangman.Core.Localizations
         string FeedbackDifficultyMedium { get; }
         string FeedbackDifficultyHard { get; }
 
-        // Gemensamt
+        // Shared UI
         string CommonPressEscapeToCancel { get; }
         string CommonPressAnyKeyToContinue { get; }
         string CommonFeedbackCancelling { get; }
         string CommonErrorDatabaseError(string message);
 
-        // Spela (Enspelare)
+        // Single-player game
         string PromptPlayerName { get; }
         string FeedbackFetchingWord(string source);
         string ErrorCouldNotStartGame(string message);
@@ -70,9 +71,9 @@ namespace Hangman.Core.Localizations
         string FeedbackPressAnyKeyToSave { get; }
         string FeedbackHighscoreSaved(int wins, WordDifficulty difficulty);
         string FeedbackReturningToMenu { get; }
-        string ErrorNoCustomWordsFound(WordDifficulty difficulty, WordLanguage language); // <-- NY METOD
+        string ErrorNoCustomWordsFound(WordDifficulty difficulty, WordLanguage language);
 
-        // Spela (Turnering)
+        // Tournament game
         string TournamentTitle { get; }
         string PromptPlayer1Name { get; }
         string PromptPlayer2Name { get; }
@@ -98,7 +99,7 @@ namespace Hangman.Core.Localizations
         string HighscoreDifficultyHeader(WordDifficulty difficulty);
         string HighscoreEntry(int rank, string name, int wins);
 
-        // Lägg till ord
+        // Add word
         string AddWordTitle { get; }
         string AddWordPrompt { get; }
         string AddWordInvalid { get; }
@@ -108,9 +109,9 @@ namespace Hangman.Core.Localizations
         string AddWordSelectLanguagePrompt { get; }
         string AddWordLanguageSwedish { get; }
         string AddWordLanguageEnglish { get; }
-        string ErrorWordAlreadyExists(string word, WordDifficulty difficulty, WordLanguage language); // <-- NY METOD
+        string ErrorWordAlreadyExists(string word, WordDifficulty difficulty, WordLanguage language);
 
-        // Hjälpskärm
+        // Help screen
         string HelpTitle { get; }
         string HelpLine1 { get; }
         string HelpLine2 { get; }
@@ -122,7 +123,7 @@ namespace Hangman.Core.Localizations
         string HelpSourcesLine2 { get; }
         string HelpSourcesLine3 { get; }
 
-        // Spelrunda
+        // Game round
         string RoundTitleNewRound { get; }
         string RoundTitleGame { get; }
         string RoundActivePlayer { get; }
@@ -136,23 +137,23 @@ namespace Hangman.Core.Localizations
         string RoundLost { get; }
         string RoundWon { get; }
 
-        // Slutskärm
+        // End screen
         string EndScreenCongrats { get; }
         string EndScreenCancelled { get; }
         string EndScreenLost { get; }
         string EndScreenCorrectWord(string secret);
 
-        // Input-hantering
+        // Input handling
         string GetGuessPrompt { get; }
         string GetGuessInvalid(char letter);
         string GetGuessAlreadyGuessed(char letter);
         string GetPlayerNameEmpty { get; }
 
-        // --- NYTT FÖR TIMER ---
+        // Timer-related strings
         string RoundTimerDisplay(int seconds);
         string RoundTimerExpired { get; }
 
-        // ========== NYA STRÄNGAR FÖR WPF ==========
+        // WPF-specific strings
         string ButtonBackToMenu { get; }
         string MainMenuWpfTitle { get; }
         string LanguageSelectorTitle { get; }
@@ -179,10 +180,9 @@ namespace Hangman.Core.Localizations
         string TournamentHeaderLives { get; }
         string TournamentHeaderWins { get; }
 
-        // ========== NYA STRÄNGAR FÖR WPF ==========
+        // Default player names used by the WPF UI
         string DefaultPlayerName { get; }
         string DefaultPlayer1Name { get; }
         string DefaultPlayer2Name { get; }
-        // ==========================================
     }
 }
