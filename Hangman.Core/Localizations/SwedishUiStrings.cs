@@ -1,22 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hangman.Core.Models;
 
+
 namespace Hangman.Core.Localizations
 {
+    /// <summary>
+    /// Provides the Swedish UI text used by the application.
+    /// Keeping user-facing text in a dedicated implementation allows the
+    /// application flow to remain independent of the selected language.
+    /// </summary>
     public class SwedishUiStrings : IUiStrings
     {
-        // Välkomstskärm
+        // Welcome screen
         // ... (ASCII ART)
         public string WelcomeTitleArt => @"´      
-      _   _   _ _ _   _    _   ____     _            ____   _   _   ____   ____   ____   ___________.._______
-     | | | |   / \    | \ | | / ___|   / \          / ___| | | | | | __ \ | __ \ | ___| | .__________))______|
-     | |_| |  / _ \   |  \| | | |  _  / _ \        | |  _  | | | | | |_) || |_) || |__  | | / /      || 
-     |  _  | / ___ \  | |\  | | |_| |/ ___ \       | |_| | | |_| | | |_)  | |_) || ___| | |/ /       ||  
-     |_| |_|/_/   \_\ |_| \_| \____|/_/   \_\       \____| \_____/ |____/ |____/ |____| | | /        ||.-''.
+      _   _   _ _ _   _    _   ____     _            ____   _   _   ____   ____   ____   ___________.._______
+     | | | |   / \    | \ | | / ___|   / \          / ___| | | | | | __ \ | __ \ | ___| | .__________))______|
+     | |_| |  / _ \   |  \| | | |  _  / _ \        | |  _  | | | | | |_) || |_) || |__  | | / /      || 
+     |  _  | / ___ \  | |\  | | |_| |/ ___ \       | |_| | | |_| | | |_)  | |_) || ___| | |/ /       ||  
+     |_| |_|/_/   \_\ |_| \_| \____|/_/   \_\       \____| \_____/ |____/ |____/ |____| | | /        ||.-''.
                                                                                         | |/         |/  _  \
                                                                                         | |          ||  `/,|
                                                                                         | |          (\\`_.'
@@ -29,7 +35,6 @@ namespace Hangman.Core.Localizations
                                                                                         | |          || ||                                                      
                                                                                         | |          || || 
                                                                                         | |          || ||
-                                                                                        | |         / | | \
                                                                              """"""""""""""""""""|_`-' `-' |""""""|  
                                                                               |""|""""""""""""""\ \         |""|          
                                                                                         | |      \ \        | |
@@ -39,14 +44,14 @@ namespace Hangman.Core.Localizations
         public string WelcomeMessage => "\n\n          Välkommen till HÄNGA GUBBE!";
         public string WelcomePressAnyKey => "     Tryck valfri tangent för att starta...";
 
-        // Huvudmeny
+        // Main menu
         // ... (ASCII ART)
         public string MainMenuTitleArt => @"
-      _   _   _ _ _   _    _   ____     _            ____   _   _   ____   ____   ____ 
-     | | | |   / \    | \ | | / ___|   / \          / ___| | | | | | __ \ | __ \ | ___|
-     | |_| |  / _ \   |  \| | | |  _  / _ \        | |  _  | | | | | |_) || |_) || |__  
-     |  _  | / ___ \  | |\  | | |_| |/ ___ \       | |_| | | |_| | | |_)  | |_) || ___| 
-     |_| |_|/_/   \_\ |_| \_| \____|/_/   \_\       \____| \_____/ |____/ |____/ |____|
+      _   _   _ _ _   _    _   ____     _            ____   _   _   ____   ____   ____ 
+     | | | |   / \    | \ | | / ___|   / \          / ___| | | | | | __ \ | __ \ | ___|
+     | |_| |  / _ \   |  \| | | |  _  / _ \        | |  _  | | | | | |_) || |_) || |__  
+     |  _  | / ___ \  | |\  | | |_| |/ ___ \       | |_| | | |_| | | |_)  | |_) || ___| 
+     |_| |_|/_/   \_\ |_| \_| \____|/_/   \_\       \____| \_____/ |____/ |____/ |____|
             ";
         public string MainMenuGallowsArt => @"
         +-------+
@@ -70,7 +75,7 @@ namespace Hangman.Core.Localizations
         public string MenuChoicePrompt => "\nDitt val (1-6): ";
         public string FeedbackThanksForPlaying => "Tack för att du spelade!";
 
-        // Val av ordkälla
+        // Word source selection
         public string SelectWordSourceTitle => "--- VÄLJ ORDLISTA ---";
         public string SelectWordSourceApi => "1. Engelska (API - olika längd)";
         public string SelectWordSourceLocal => "2. Svenska (Lokal lista)";
@@ -82,7 +87,7 @@ namespace Hangman.Core.Localizations
         public string FeedbackWordSourceCustomSwedish => "Anpassad Ordlista (Svenska)";
         public string FeedbackWordSourceCustomEnglish => "Anpassad Ordlista (Engelska)";
 
-        // Val av svårighetsgrad
+        // Difficulty selection
         public string SelectDifficultyTitle(string source) => $"--- VÄLJ SVÅRIGHETSGRAD ({source}) ---";
         public string SelectDifficultyEasy => "1. Lätt (3-4 bokstäver)";
         public string SelectDifficultyMedium => "2. Medium (5-7 bokstäver)";
@@ -92,13 +97,13 @@ namespace Hangman.Core.Localizations
         public string FeedbackDifficultyMedium => "Medium";
         public string FeedbackDifficultyHard => "Svår";
 
-        // Gemensamt
+        // Shared UI
         public string CommonPressEscapeToCancel => "(Tryck Escape när som helst för att avbryta)";
         public string CommonPressAnyKeyToContinue => "\nTryck valfri tangent för att återgå till menyn...";
         public string CommonFeedbackCancelling => "Avbryter...";
         public string CommonErrorDatabaseError(string message) => $"\nEtt databasfel inträffade: {message}";
 
-        // Spela (Enspelare)
+        // Single-player game
         public string PromptPlayerName => "Ange ditt namn för highscore: ";
         public string FeedbackFetchingWord(string source) => $"Hämtar ord från: {source}...";
         public string ErrorCouldNotStartGame(string message) => $"\nKunde inte starta spelet (Ordlistefel):\n{message}";
@@ -110,7 +115,7 @@ namespace Hangman.Core.Localizations
         public string FeedbackHighscoreSaved(int wins, WordDifficulty difficulty) => $"\nHighscore ({wins} vinster i rad) sparat för {difficulty}!";
         public string FeedbackReturningToMenu => "\nÅtergår till huvudmenyn...";
 
-        // Spela (Turnering)
+        // Tournament game
         public string TournamentTitle => "--- TVÅSPELARTURNERING ---";
         public string PromptPlayer1Name => "Ange namn för Spelare 1: ";
         public string PromptPlayer2Name => "Ange namn för Spelare 2: ";
@@ -137,7 +142,7 @@ namespace Hangman.Core.Localizations
         public string HighscoreDifficultyHeader(WordDifficulty difficulty) => $"\n--- SVÅRIGHETSGRAD: {difficulty} ---";
         public string HighscoreEntry(int rank, string name, int wins) => $"{rank}. {name} - {wins} vinster i rad.";
 
-        // Lägg till ord
+        // Add word
         public string AddWordTitle => "--- LÄGG TILL NYTT ORD ---";
         public string AddWordPrompt => "Ange ordet (A-Ö): ";
         public string AddWordInvalid => "\nOgiltigt ord. Ange endast bokstäver.";
@@ -148,7 +153,7 @@ namespace Hangman.Core.Localizations
         public string AddWordLanguageSwedish => "1. Svenska";
         public string AddWordLanguageEnglish => "2. Engelska";
 
-        // Hjälpskärm
+        // Help screen
         public string HelpTitle => "--- HJÄLP / HUR MAN SPELAR ---";
         public string HelpLine1 => "Spelet går ut på att gissa det hemliga ordet, bokstav för bokstav.";
         public string HelpLine2 => "Du har 6 gissningar på dig innan gubben hängs (MAX 6 fel).";
@@ -160,7 +165,7 @@ namespace Hangman.Core.Localizations
         public string HelpSourcesLine2 => "  Lokal: Svenska ord från en inbyggd lista.";
         public string HelpSourcesLine3 => "  Anpassad: Ord som du själv har lagt till (både svenska och engelska).";
 
-        // Spelrunda
+        // Game round
         public string RoundTitleNewRound => "--- NY RUNDA STARTAD ---";
         public string RoundTitleGame => "--- HÄNGA GUBBE ---";
         public string RoundActivePlayer => "Aktiv spelare:";
@@ -174,31 +179,30 @@ namespace Hangman.Core.Localizations
         public string RoundLost => "förlorade rundan.";
         public string RoundWon => "vann rundan!";
 
-        // Slutskärm
+        // End screen
         public string EndScreenCongrats => "\nGRATTIS, DU VANN!";
         public string EndScreenCancelled => "\nDu avbröt rundan.";
         public string EndScreenLost => "\nDU FÖRLORADE...";
         public string EndScreenCorrectWord(string secret) => $"Det rätta ordet var: {secret}";
 
-        // Input-hantering
+        // Input handling
         public string GetGuessPrompt => "Gissa på en bokstav (eller Escape för att ge upp): ";
         public string GetGuessInvalid(char letter) => $"\nOgiltig gissning '{letter}'. Endast bokstäver (A-Ö).";
         public string GetGuessAlreadyGuessed(char letter) => $"\nDu har redan gissat på '{letter}'. Försök igen.";
         public string GetPlayerNameEmpty => "\nNamnet kan inte vara tomt. Försök igen (eller Escape för att backa).";
 
-        // --- NYA IMPLEMENTATIONER FÖR EXCEPTIONS ---
-
+        // Exception-specific UI messages
         public string ErrorWordAlreadyExists(string word, WordDifficulty difficulty, WordLanguage language)
             => $"\nKunde inte lägga till ordet: '{word}' finns redan i listan för {difficulty} ({language}).";
 
         public string ErrorNoCustomWordsFound(WordDifficulty difficulty, WordLanguage language)
             => $"\nKunde inte starta spelet: Hittade inga anpassade ord i listan för {difficulty} ({language}). Lägg till ord via menyn.";
 
-        // --- NYTT FÖR TIMER ---
+        // Timer-related UI
         public string RoundTimerDisplay(int seconds) => $"Tid kvar: {seconds:D2}s";
         public string RoundTimerExpired => "Tiden är ute!";
 
-        // ========== NYA STRÄNGAR FÖR WPF ==========
+        // WPF-specific strings
         public string ButtonBackToMenu => "Tillbaka till Menyn";
         public string MainMenuWpfTitle => "WPF HÄNGA GUBBE ";
         public string LanguageSelectorTitle => "Välj språk / Select language";
